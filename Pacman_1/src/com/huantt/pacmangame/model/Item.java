@@ -13,7 +13,7 @@ public class Item extends GameObject {
     public static final int TYPE_STONE = 1;
     public static final int TYPE_BEAN_NORMAL = 2;
     public static final int TYPE_BEAN_POWER = 3;
-    public static final int SIZE = 30;
+    public static final int SIZE = GameObject.SIZE_GAME_OBJECT;
 
     public Item(int x, int y, int type) {
         this.x = x;

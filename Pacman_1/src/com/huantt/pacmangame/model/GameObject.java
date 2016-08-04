@@ -6,7 +6,7 @@ import java.awt.*;
  * Created by Huan on 7/22/2016.
  */
 public abstract class GameObject {
-
+    public static final int SIZE_GAME_OBJECT = 29;
     protected int x;
     protected int y;
 

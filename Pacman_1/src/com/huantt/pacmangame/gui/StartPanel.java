@@ -1,10 +1,8 @@
 package com.huantt.pacmangame.gui;
 
-import com.huantt.pacmangame.interfaces.OnPlayListener;
+import com.huantt.pacmangame.interfaces.OnClickGameListener;
 import com.huantt.pacmangame.model.Ghost;
-import com.huantt.pacmangame.model.Item;
 import com.huantt.pacmangame.model.Pacman;
-import manager.FileSoundManager;
 import manager.ImageLoader;
 import manager.SoundPlayer;
 
@@ -17,9 +15,8 @@ import java.util.ArrayList;
 /**
  * Created by Huan on 7/31/2016.
  */
-public class MenuPanel extends BaseContaiter implements Runnable {
-    GamePlayPanel gamePlayPanel;
-    private OnPlayListener onPlayListener;
+public class StartPanel extends BaseContaiter implements Runnable {
+    private OnClickGameListener onPlayListener;
     private JLabel lbPlay;
     private JLabel lbHighScores;
     private JLabel lbAbout;
@@ -31,7 +28,7 @@ public class MenuPanel extends BaseContaiter implements Runnable {
     private int y;
     private ArrayList<Ghost> ghosts;
 
-    public MenuPanel() {
+    public StartPanel() {
         super();
         x = GUI.WIDTH_FRAME/2-Pacman.SIZE -2*Ghost.SIZE;
         y = GUI.HEIGHT_FRAME / 2 + 200;
@@ -101,25 +98,20 @@ public class MenuPanel extends BaseContaiter implements Runnable {
 
     @Override
     void initializeComponents() {
-        Font myFont = new Font("Tahoma", Font.PLAIN, 20);
-        FontMetrics fontMetrics = getFontMetrics(myFont);
         lbPlay = new JLabel("PLAY");
-        lbPlay.setFont(myFont);
         lbPlay.setBounds(200, GUI.HEIGHT_FRAME / 3, 200, 55);
         lbPlay.setIcon(ImageLoader.IC_PLAY[0]);
         lbHighScores = new JLabel("PLAY");
-        lbHighScores.setFont(myFont);
         lbHighScores.setBounds(200, GUI.HEIGHT_FRAME / 3 + 100, 200, 55);
         lbHighScores.setIcon(ImageLoader.IC_HIGH_SCORES[0]);
         lbAbout = new JLabel("PLAY");
-        lbAbout.setFont(myFont);
         lbAbout.setBounds(200, GUI.HEIGHT_FRAME / 3 + 200, 200, 55);
         lbAbout.setIcon(ImageLoader.IC_ABOUT[0]);
 
 
     }
 
-    public void addPlayListener(OnPlayListener onPlayListener) {
+    public void addPlayListener(OnClickGameListener onPlayListener) {
         this.onPlayListener = onPlayListener;
     }
 
@@ -134,7 +126,7 @@ public class MenuPanel extends BaseContaiter implements Runnable {
 
     @Override
     public void run() {
-        soundPlayer.playSound(FileSoundManager.SOUND_INTRO);
+//        soundPlayer.playSound(FileSoundManager.SOUND_INTRO);
         background = ImageLoader.IMG_BACKGROUND[1];
         repaint();
         add(lbPlay);

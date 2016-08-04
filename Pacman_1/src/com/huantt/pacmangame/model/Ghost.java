@@ -18,7 +18,7 @@ public class Ghost extends GameObject {
     public static final int TYPE_CLYDE = 2;
     public static final int TYPE_INKY = 3;
     public static final int TYPE_PINKY = 4;
-    public static final int SIZE = 30;
+    public static final int SIZE = GameObject.SIZE_GAME_OBJECT;
     public static final String LEFT_RIGHT = "LR";
     public static final String UP_DOWN = "UD";
     public static final String FOUR_ORIENTS = "4_Orient";
@@ -32,6 +32,7 @@ public class Ghost extends GameObject {
     private int countDownImage;
     private String orients;
     private Rectangle reGhost;
+    private boolean isDie;
 
     public Ghost(int x, int y, int type, int delay, String orients) {
         this.x = x;
@@ -40,7 +41,7 @@ public class Ghost extends GameObject {
         orient = RIGHT;
         this.delay = delay;
         this.orients = orients;
-        reGhost = new Rectangle(x,y,SIZE,SIZE);
+        reGhost = new Rectangle(x, y, SIZE, SIZE);
 
     }
 
@@ -54,6 +55,9 @@ public class Ghost extends GameObject {
 
     @Override
     public void draw(Graphics2D graphics2D) {
+        if (isDie) {
+            graphics2D.drawImage(ImageLoader.IMG_GHOST_DIE[numberOfImage/2], x, y, SIZE, SIZE, null);
+        }else
         switch (type) {
             case TYPE_BLINKY:
                 graphics2D.drawImage(ImageLoader.IMG_BLINKY[numberOfImage], x, y, SIZE, SIZE, null);
@@ -154,5 +158,13 @@ public class Ghost extends GameObject {
             return true;
         }
         return false;
+    }
+
+    public void setDie(boolean die) {
+        isDie = die;
+    }
+
+    public boolean isDie() {
+        return isDie;
     }
 }

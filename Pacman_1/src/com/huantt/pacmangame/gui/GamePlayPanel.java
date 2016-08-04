@@ -1,6 +1,8 @@
 package com.huantt.pacmangame.gui;
 
 
+import com.huantt.pacmangame.interfaces.OnChangeListener;
+import com.huantt.pacmangame.model.Item;
 import com.huantt.pacmangame.model.Pacman;
 import manager.GameManager;
 
@@ -14,7 +16,10 @@ import java.util.BitSet;
  * Created by Huan on 7/12/2016.
  */
 
-public class GamePlayPanel extends BaseContaiter implements Runnable {
+public class GamePlayPanel extends BaseContaiter implements Runnable, OnChangeListener {
+    public static final int WIDTH_PANEL = GameManager.NUM_OF_COLUMNS_MAP * Item.SIZE;
+    public static final int HEIGHT_PANEL = GameManager.NUM_OF_ROWS_MAP * Item.SIZE;
+
     private GameManager gameManager;
     private boolean isRunning;
     private KeyAdapter keyAdapter;
@@ -24,8 +29,11 @@ public class GamePlayPanel extends BaseContaiter implements Runnable {
         super();
         startGame();
         initializeKeyListener();
-        setSize(GUI.WIDTH_FRAME,GUI.HEIGHT_FRAME);
+        setSize(WIDTH_PANEL, HEIGHT_PANEL);
+    }
 
+    public GameManager getGameManager() {
+        return gameManager;
     }
 
     void initializeKeyListener() {
@@ -57,17 +65,6 @@ public class GamePlayPanel extends BaseContaiter implements Runnable {
         gameManager = new GameManager();
     }
 
-    @Override
-    protected void paintComponent(Graphics g) { // Gọi mỗi lần repaint trong run !
-        super.paintComponent(g);
-        Graphics2D graphics2D = (Graphics2D) g;
-        gameManager.drawIteam(graphics2D);
-        gameManager.drawBullet(graphics2D);
-        gameManager.drawSwirl(graphics2D);
-        gameManager.drawPacMan(graphics2D);
-        gameManager.drawGhost(graphics2D);
-    }
-
     public void startGame() {
         gameManager.chanePacmanOrient(Pacman.LEFT); // Ban dau no quay dau ben trai
         isRunning = true;
@@ -95,8 +92,29 @@ public class GamePlayPanel extends BaseContaiter implements Runnable {
     }
 
     @Override
+    public void onChangeScore(int score) {
+
+    }
+
+    @Override
+    public void onPacmanDie() {
+
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) { // Gọi mỗi lần repaint trong run !
+        super.paintComponent(g);
+        Graphics2D graphics2D = (Graphics2D) g;
+        gameManager.drawIteam(graphics2D);
+        gameManager.drawBullet(graphics2D);
+        gameManager.drawSwirl(graphics2D);
+        gameManager.drawPacMan(graphics2D);
+        gameManager.drawGhost(graphics2D);
+    }
+
+    @Override
     public void run() { // Thread nay chuyen xu ly cac cong viec tinh toan de nhan vat di chuyen cac thu
-        int countSpeed=0;
+        int countSpeed = 0;
         while (isRunning) {
             handleKeyAction();
             gameManager.handleMovePacMan(countSpeed);
@@ -112,10 +130,10 @@ public class GamePlayPanel extends BaseContaiter implements Runnable {
             }
             gameManager.handleBulletMove();
             gameManager.handleGhostMove(countSpeed);
-            if(countSpeed ==100){
-                countSpeed=0;
-            }else
-            countSpeed++;
+            if (countSpeed == 100) {
+                countSpeed = 0;
+            } else
+                countSpeed++;
             repaint();
             try {
                 Thread.sleep(8);

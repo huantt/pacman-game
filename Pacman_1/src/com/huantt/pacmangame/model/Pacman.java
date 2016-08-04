@@ -13,18 +13,26 @@ public class Pacman extends GameObject {
     public static final int DOWN = 1;
     public static final int RIGHT = 2;
     public static final int LEFT = 3;
-    public static final int SIZE = 30;
+    public static final int SIZE = GameObject.SIZE_GAME_OBJECT;
     private int numberOfImage;
     private int countDownImage;
     private int orient;
     private static final int MAX_COUNTDOWN = 60;
-    int delay;
+    private int delay;
+    private int turn;
 
-    public Pacman(int x, int y, int orient,int delay) {
+
+    public Pacman(int x, int y, int orient, int delay) {
         this.x = x;
         this.y = y;
         this.orient = orient;
         this.delay = delay;
+        turn = 3;
+    }
+
+    public void setLocation(int x, int y) {
+        this.x = x;
+        this.y = y;
     }
 
     public int getOrient() {
@@ -35,6 +43,14 @@ public class Pacman extends GameObject {
         numberOfImage = 1; // Khi chuyển hướng thì hình bắt đầu là hình 1
         this.orient = orient;
 
+    }
+
+    public int getTurn() {
+        return turn;
+    }
+
+    public int die() {
+        return --turn;
     }
 
     @Override
@@ -124,8 +140,11 @@ public class Pacman extends GameObject {
                 }
                 return isIntersect;
             case Item.TYPE_BEAN_NORMAL:
-                Rectangle r = recPacman.intersection(iteam.getRItem());
-                return (Item.SIZE / 2 < r.getWidth() && Item.SIZE / 3 < r.getHeight());
+                Rectangle rNomal = recPacman.intersection(iteam.getRItem());
+                return (Item.SIZE / 2 < rNomal.getWidth() && Item.SIZE / 3 < rNomal.getHeight());
+            case Item.TYPE_BEAN_POWER:
+                Rectangle rPower = recPacman.intersection(iteam.getRItem());
+                return (Item.SIZE / 2 < rPower.getWidth() && Item.SIZE / 3 < rPower.getHeight());
         }
         return false;
     }

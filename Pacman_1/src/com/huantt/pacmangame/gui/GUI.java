@@ -12,9 +12,8 @@ import java.awt.event.WindowEvent;
  * Created by Huan on 7/22/2016.
  */
 public class GUI extends JFrame {
-    public static final int WIDTH_FRAME = GameManager.NUM_OF_COLUMNS_MAP* Item.SIZE+16;
-    public static final int HEIGHT_FRAME = GameManager.NUM_OF_ROWS_MAP* Item.SIZE +50;
-
+    public static final int WIDTH_FRAME = GamePlayPanel.WIDTH_PANEL;
+    public static final int HEIGHT_FRAME = GamePlayPanel.HEIGHT_PANEL + InfoPanel.HEIGHT_FRAME;
     public GUI() {
         initializeGUI();
         initializeWindowListener();
