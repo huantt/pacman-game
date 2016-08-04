@@ -1,8 +1,6 @@
 package manager;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.net.URL;
 
 /**
@@ -10,6 +8,7 @@ import java.net.URL;
  */
 public class FileSoundManager {
     public static final File SOUND_INTRO = new File(getURL("sound_start.mp3").getPath());
+    public static final File SOUND_PACMAN_DIE = new File(getURL("sound_die.mp3").getPath());
 
     public static URL getURL(String fileName) {
         return ImageLoader.class.getResource("/res/sounds/" + fileName);

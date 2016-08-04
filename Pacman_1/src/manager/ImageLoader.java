@@ -97,6 +97,12 @@ public class ImageLoader {
             new ImageIcon(getURL("background_1.png")).getImage(),
             new ImageIcon(getURL("background_2.png")).getImage()
     };
+    public static final Image[] IMG_GHOST_DIE = {
+            new ImageIcon(getURL("ghost_die_1.png")).getImage(),
+            new ImageIcon(getURL("ghost_die_2.png")).getImage(),
+            new ImageIcon(getURL("ghost_die_1.png")).getImage(),
+            new ImageIcon(getURL("ghost_die_2.png")).getImage(),
+    };
 
 
     public static URL getURL(String fileName) {

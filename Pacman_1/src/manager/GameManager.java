@@ -1,8 +1,10 @@
 package manager;
 
 import com.huantt.pacmangame.gui.GUI;
+import com.huantt.pacmangame.interfaces.OnChangeListener;
 import com.huantt.pacmangame.model.*;
 
+import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -11,7 +13,7 @@ import java.io.RandomAccessFile;
 import java.util.ArrayList;
 
 /**
- * Created by Huan on 7/22/2016.
+ * Created by Huan on 7/22/2016
  */
 public class GameManager {
     private Pacman pacman;
@@ -26,6 +28,8 @@ public class GameManager {
     public static final int NUM_OF_COLUMNS_MAP = 21;
     private static final int MAX_COUNTDOWN_PACMAN = 100;
     private int numberOfBeanNomal;
+    private int numberOfBullet;
+    private OnChangeListener onChangeListener;
 
     public GameManager() {
         initializeGhost();
@@ -112,7 +116,23 @@ public class GameManager {
 
     public void handleMovePacMan(int count) {
         boolean breackFor = false;
+        Rectangle rePacman = new Rectangle(pacman.getX(), pacman.getY(), pacman.SIZE - 5, Pacman.SIZE - 5);
+        for (int i = 0; i < ghosts.size(); i++) {
+            if (rePacman.intersects(ghosts.get(i).getReGhost()) && ghosts.get(i).isDie() == false) {
+                SoundPlayer soundPlayer = new SoundPlayer();
+                soundPlayer.playSound(FileSoundManager.SOUND_PACMAN_DIE);
+                onChangeListener.onPacmanDie();
 
+                if (pacman.die() == 0) {
+                    int select = JOptionPane.showConfirmDialog(null, "Game Over", "Game over", JOptionPane.OK_OPTION);
+                    if (select == 0) System.exit(0);
+                } else {
+                    pacman.setLocation((NUM_OF_COLUMNS_MAP / 2) * Item.SIZE, (NUM_OF_ROWS_MAP - 2) * Item.SIZE);
+                    initializeGhost();
+
+                }
+            }
+        }
         for (int i = 0; i < iteams.size(); i++) {
             if (pacman.collision(iteams.get(i))) {
                 switch (iteams.get(i).getType()) {
@@ -121,21 +141,19 @@ public class GameManager {
                     case Item.TYPE_BEAN_NORMAL:
                         iteams.remove(i);
                         score++;
+                        onChangeListener.onChangeScore(score);
                         numberOfBeanNomal--;
                         breackFor = true;
                         break;
                     case Item.TYPE_BEAN_POWER:
-                        score += 2;
+                        iteams.remove(i);
+                        numberOfBullet++;
                         break;
                 }
                 if (breackFor) break;
             }
         }
-        Rectangle rePacman = new Rectangle(pacman.getX(), pacman.getY(), pacman.SIZE, Pacman.SIZE);
-        for (int i = 0; i < ghosts.size(); i++) {
-            if (rePacman.intersects(ghosts.get(i).getReGhost())) {
-            }
-        }
+
         movePacman(count);
     }
 
@@ -189,14 +207,15 @@ public class GameManager {
     }
 
     public void fireByPacman() {
-        if (score >= 10) {
+        if (numberOfBullet > 0) {
             if (countDowntFirePacman == 0) {
-                score -= 10;
+                numberOfBullet--;
+                System.out.println("numberOfBullet = " + numberOfBullet);
                 Bullet bullet = new Bullet(pacman.getOrient(), pacman.getX(), pacman.getY());
                 bullets.add(bullet);
                 countDowntFirePacman = MAX_COUNTDOWN_PACMAN;
             } else {
-                countDowntFirePacman -= 5;
+                countDowntFirePacman -= 20;
             }
 
         }
@@ -211,7 +230,7 @@ public class GameManager {
             Rectangle reBullet = new Rectangle(bullets.get(i).getX(), bullets.get(i).getY(), Bullet.SIZE, Bullet.SIZE);
             for (int j = 0; j < ghosts.size(); j++) {
                 if (reBullet.intersects(ghosts.get(j).getReGhost())) {
-                    System.out.println("Ghost Die");
+                    ghosts.get(j).setDie(true);
                     bullets.remove(i);
                     isBreak = true;
                     break;
@@ -280,7 +299,13 @@ public class GameManager {
 
     public void handleGhostMove(int count) {
         boolean[] isMove = new boolean[4];
+
         for (int j = 0; j < ghosts.size(); j++) {
+            for (Ghost ghost : ghosts) {
+                if (ghosts.get(j).getReGhost().intersects(ghost.getReGhost()) && !ghost.isDie()) {
+                    ghosts.get(j).setDie(false);
+                }
+            }
             for (int i = 0; i < iteams.size(); i++) {
                 if (ghosts.get(j).collision(iteams.get(i))) {
                     isMove[j] = false;
@@ -295,5 +320,9 @@ public class GameManager {
                 ghosts.get(j).autoChaneOrient();
             }
         }
+    }
+
+    public void addChangeScoreListenr(OnChangeListener onChangeScoreListener) {
+        this.onChangeListener = onChangeScoreListener;
     }
 }
