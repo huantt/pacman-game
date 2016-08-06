@@ -27,22 +27,21 @@ public class Bullet extends GameObject {
         int yy = y;
         switch (orient) {
             case LEFT:
-                yy += Item.SIZE / 2-SIZE/2;
+                yy += Item.SIZE / 2 - SIZE / 2;
 
                 break;
             case DOWN:
-                xx += Item.SIZE / 2-SIZE/2;
+                xx += Item.SIZE / 2 - SIZE / 2;
 
                 break;
             case RIGHT:
-                yy += Item.SIZE / 2-SIZE/2;
+                yy += Item.SIZE / 2 - SIZE / 2;
 
                 break;
             case UP:
-                xx += Item.SIZE / 2-SIZE/2;
+                xx += Item.SIZE / 2 - SIZE / 2;
                 break;
         }
-
         graphics2D.drawImage(ImageLoader.IMG_BULLET, xx, yy, SIZE, SIZE, null);
     }
 

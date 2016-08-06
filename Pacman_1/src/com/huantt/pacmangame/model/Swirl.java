@@ -38,4 +38,6 @@ public class Swirl extends GameObject {
         graphics2D.drawImage(ImageLoader.IMG_SWIRL[numberOfImage], x, y, SIZE, SIZE, null);
 
     }
+
+
 }

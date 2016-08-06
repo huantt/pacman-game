@@ -21,15 +21,16 @@ public class GameManager {
     private ArrayList<Bullet> bullets;
     private ArrayList<Ghost> ghosts;
     private Swirl swirl;
-    private int pacmanNextOrient;
-    private int countDowntFirePacman;
-    private int score;
+    private OnChangeListener onChangeListener;
+    private PlayerManager playerManager;
     public static final int NUM_OF_ROWS_MAP = 22;
     public static final int NUM_OF_COLUMNS_MAP = 21;
     private static final int MAX_COUNTDOWN_PACMAN = 100;
+    private int pacmanNextOrient;
+    private int countDowntFirePacman;
+    private int score;
     private int numberOfBeanNomal;
     private int numberOfBullet;
-    private OnChangeListener onChangeListener;
 
     public GameManager() {
         initializeGhost();
@@ -39,6 +40,7 @@ public class GameManager {
         iteams = new ArrayList<>();
         bullets = new ArrayList<>();
         loadMap("map.txt");
+        playerManager = new PlayerManager();
     }
 
     public int getScore() {
@@ -124,6 +126,7 @@ public class GameManager {
                 onChangeListener.onPacmanDie();
 
                 if (pacman.die() == 0) {
+                    playerManager.addPlayer(new Player("T", score));
                     int select = JOptionPane.showConfirmDialog(null, "Game Over", "Game over", JOptionPane.OK_OPTION);
                     if (select == 0) System.exit(0);
                 } else {

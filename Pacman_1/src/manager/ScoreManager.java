@@ -3,7 +3,6 @@ package manager;
 import com.huantt.pacmangame.model.Player;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
@@ -17,7 +16,7 @@ public class ScoreManager {
     private File fileData;
 
     public ScoreManager() {
-        fileData = new File(getClass().getResource("/Data/data.txt").getPath());
+        fileData = new File(getClass().getResource("/data/data.txt").getPath());
     }
 
     public ArrayList<Player> readData() {

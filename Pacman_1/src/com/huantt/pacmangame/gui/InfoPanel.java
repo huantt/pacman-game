@@ -56,7 +56,7 @@ public class InfoPanel extends BaseContaiter implements OnChangeListener {
 
     }
 
-    @Override
+       @Override
     public void onPacmanDie() {
         livesPacMan.remove(0);
         this.repaint();

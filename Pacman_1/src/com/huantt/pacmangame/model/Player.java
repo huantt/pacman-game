@@ -31,7 +31,7 @@ public class Player {
 
     @Override
     public String toString() {
-        return name + " - " + score +"\n";
+        return name + "-" + score +"\n";
     }
 
     @Override
