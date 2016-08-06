@@ -31,7 +31,6 @@ public class GameManager {
     private int score;
     private int numberOfBeanNomal;
     private int numberOfBullet;
-
     public GameManager() {
         initializeGhost();
         swirl = new Swirl((NUM_OF_COLUMNS_MAP / 2) * Item.SIZE, (NUM_OF_ROWS_MAP / 2 - 1) * Item.SIZE);
@@ -90,6 +89,9 @@ public class GameManager {
                         case Item.TYPE_BEAN_POWER:
                             iteams.add(new Item(Item.SIZE * i, Item.SIZE * row, Item.TYPE_BEAN_POWER));
                             break;
+                        case Item.TYPE_DOOR:
+                            iteams.add(new Item(Item.SIZE * i, Item.SIZE * row, Item.TYPE_DOOR));
+                            break;
                     }
                 }
                 row++;
@@ -128,7 +130,11 @@ public class GameManager {
                 if (pacman.die() == 0) {
                     playerManager.addPlayer(new Player("T", score));
                     int select = JOptionPane.showConfirmDialog(null, "Game Over", "Game over", JOptionPane.OK_OPTION);
-                    if (select == 0) System.exit(0);
+                    if (select == 0){
+                        System.exit(0);
+                    }else {
+
+                    }
                 } else {
                     pacman.setLocation((NUM_OF_COLUMNS_MAP / 2) * Item.SIZE, (NUM_OF_ROWS_MAP - 2) * Item.SIZE);
                     initializeGhost();
@@ -282,9 +288,9 @@ public class GameManager {
 
     private void initializeGhost() {
         ghosts = new ArrayList<>();
-        ghosts.add(new Ghost((NUM_OF_COLUMNS_MAP / 2) * Item.SIZE, (NUM_OF_ROWS_MAP / 2 - 3) * Item.SIZE, Ghost.TYPE_BLINKY, 1, Ghost.FOUR_ORIENTS));
-        ghosts.add(new Ghost((NUM_OF_COLUMNS_MAP / 2 - 1) * Item.SIZE, (NUM_OF_ROWS_MAP / 2 - 3) * Item.SIZE, Ghost.TYPE_PINKY, 1, Ghost.FOUR_ORIENTS));
-        ghosts.add(new Ghost((NUM_OF_COLUMNS_MAP / 2 + 1) * Item.SIZE, (NUM_OF_ROWS_MAP / 2 - 3) * Item.SIZE, Ghost.TYPE_CLYDE, 1, Ghost.FOUR_ORIENTS));
+        ghosts.add(new Ghost((NUM_OF_COLUMNS_MAP / 2) * Item.SIZE, (NUM_OF_ROWS_MAP / 2 + 5) * Item.SIZE, Ghost.TYPE_BLINKY, 1, Ghost.FOUR_ORIENTS));
+        ghosts.add(new Ghost((NUM_OF_COLUMNS_MAP / 2 - 3) * Item.SIZE, (NUM_OF_ROWS_MAP / 2 - 7) * Item.SIZE, Ghost.TYPE_PINKY, 1, Ghost.FOUR_ORIENTS));
+        ghosts.add(new Ghost((NUM_OF_COLUMNS_MAP / 2 + 3) * Item.SIZE, (NUM_OF_ROWS_MAP / 2 - 7) * Item.SIZE, Ghost.TYPE_CLYDE, 1, Ghost.FOUR_ORIENTS));
         ghosts.add(new Ghost((NUM_OF_COLUMNS_MAP / 2) * Item.SIZE, (NUM_OF_ROWS_MAP / 2 - 3) * Item.SIZE, Ghost.TYPE_INKY, 1, Ghost.LEFT_RIGHT));
     }
 
@@ -302,7 +308,6 @@ public class GameManager {
 
     public void handleGhostMove(int count) {
         boolean[] isMove = new boolean[4];
-
         for (int j = 0; j < ghosts.size(); j++) {
             for (Ghost ghost : ghosts) {
                 if (ghosts.get(j).getReGhost().intersects(ghost.getReGhost()) && !ghost.isDie()) {

@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="Pacman_Project:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/Pacman_Project_jar</output-path>
+    <root id="archive" name="Pacman_Project.jar">
+      <element id="module-output" name="Pacman_Project" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../../../../Library/JLayer1.0.1/jl1.0.1.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

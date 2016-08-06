@@ -23,7 +23,6 @@ public class InfoPanel extends BaseContaiter implements OnChangeListener {
         setBackground(Color.BLACK);
         setSize(GamePlayPanel.WIDTH_PANEL, 100);
 
-
     }
 
     @Override

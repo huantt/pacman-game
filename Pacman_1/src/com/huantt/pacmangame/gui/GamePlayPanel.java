@@ -105,11 +105,11 @@ public class GamePlayPanel extends BaseContaiter implements Runnable, OnChangeLi
     protected void paintComponent(Graphics g) { // Gọi mỗi lần repaint trong run !
         super.paintComponent(g);
         Graphics2D graphics2D = (Graphics2D) g;
-        gameManager.drawIteam(graphics2D);
         gameManager.drawBullet(graphics2D);
         gameManager.drawSwirl(graphics2D);
-        gameManager.drawPacMan(graphics2D);
+        gameManager.drawIteam(graphics2D);
         gameManager.drawGhost(graphics2D);
+        gameManager.drawPacMan(graphics2D);
     }
 
     @Override

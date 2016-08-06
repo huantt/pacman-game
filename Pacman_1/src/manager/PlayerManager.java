@@ -71,6 +71,12 @@ public class PlayerManager {
                 randomAccessFile.close();
             } catch (IOException e) {
                 e.printStackTrace();
+            }finally {
+                try {
+                    randomAccessFile.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
             return true;
 

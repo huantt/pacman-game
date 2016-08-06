@@ -5,5 +5,8 @@ package com.huantt.pacmangame.interfaces;
  */
 public interface OnClickGameListener {
     void onClickPlay();
-    void onRePlay();
+    void onClickHightScore();
+    void onClickBackFromHightScore();
+    void onClickBackFromAbout();
+    void onClickAbout();
 }

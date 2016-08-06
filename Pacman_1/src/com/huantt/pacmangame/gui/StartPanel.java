@@ -30,7 +30,7 @@ public class StartPanel extends BaseContaiter implements Runnable {
 
     public StartPanel() {
         super();
-        x = GUI.WIDTH_FRAME/2-Pacman.SIZE -2*Ghost.SIZE;
+        x = GUI.WIDTH_FRAME / 2 - Pacman.SIZE - 2 * Ghost.SIZE;
         y = GUI.HEIGHT_FRAME / 2 + 200;
         pacman = new Pacman(x, y, Pacman.RIGHT, 1);
         ghosts = new ArrayList<>();
@@ -88,6 +88,12 @@ public class StartPanel extends BaseContaiter implements Runnable {
                 if (e.getComponent().equals(lbPlay)) {
                     onPlayListener.onClickPlay();
                 }
+                if (e.getComponent().equals(lbHighScores)) {
+                    onPlayListener.onClickHightScore();
+                }
+                if (e.getComponent().equals(lbAbout)){
+                    onPlayListener.onClickAbout();
+                }
             }
 
         };
@@ -134,7 +140,7 @@ public class StartPanel extends BaseContaiter implements Runnable {
         add(lbAbout);
         while (true) {
             repaint();
-            if (pacman.getX() == GUI.WIDTH_FRAME -Pacman.SIZE) {
+            if (pacman.getX() == GUI.WIDTH_FRAME - Pacman.SIZE) {
                 pacman.setOrient(Pacman.LEFT);
                 for (Ghost ghost : ghosts) {
                     ghost.setOrient(Ghost.LEFT);

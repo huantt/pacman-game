@@ -14,6 +14,7 @@ public class ImageLoader {
     public static final Image IMG_ITEM_BEAN_NORMAL = new ImageIcon(getURL("bean_normal.png")).getImage();
     public static final Image IMG_ITEM_BEAN_POWER = new ImageIcon(getURL("bean_power.png")).getImage();
     public static final Image IMG_BULLET = new ImageIcon(getURL("bullet.png")).getImage();
+    public static final Image IMG_DOOR = new ImageIcon(getURL("door.png")).getImage();
     public static final Image[] IMG_SWIRL = {
             new ImageIcon(getURL("swirl_1.png")).getImage(),
             new ImageIcon(getURL("swirl_2.png")).getImage(),
