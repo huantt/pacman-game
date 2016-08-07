@@ -12,7 +12,7 @@ public class Item extends GameObject {
     private Rectangle rItem;
     public static final int TYPE_STONE = 1;
     public static final int TYPE_BEAN_NORMAL = 2;
-    public static final int TYPE_BEAN_POWER = 3;
+    public static final int TYPE_BULLET = 3;
     public static final int TYPE_DOOR = 4;
     public static final int SIZE = GameObject.SIZE_GAME_OBJECT;
 
@@ -31,10 +31,6 @@ public class Item extends GameObject {
         return type;
     }
 
-    public void setType(int type) {
-        this.type = type;
-    }
-
     @Override
     public void draw(Graphics2D graphics2D) {
         switch (type) {
@@ -44,8 +40,8 @@ public class Item extends GameObject {
             case TYPE_BEAN_NORMAL:
                 graphics2D.drawImage(ImageLoader.IMG_ITEM_BEAN_NORMAL, x, y, SIZE, SIZE, null);
                 break;
-            case TYPE_BEAN_POWER:
-                graphics2D.drawImage(ImageLoader.IMG_ITEM_BEAN_POWER, x, y, SIZE, SIZE, null);
+            case TYPE_BULLET:
+                graphics2D.drawImage(ImageLoader.IMG_BULLET, x, y, SIZE, SIZE, null);
                 break;
             case TYPE_DOOR:
                 graphics2D.drawImage(ImageLoader.IMG_DOOR, x, y, SIZE, SIZE, null);

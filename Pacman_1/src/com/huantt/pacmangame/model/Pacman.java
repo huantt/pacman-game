@@ -142,7 +142,7 @@ public class Pacman extends GameObject {
             case Item.TYPE_BEAN_NORMAL:
                 Rectangle rNomal = recPacman.intersection(iteam.getRItem());
                 return (Item.SIZE / 2 < rNomal.getWidth() && Item.SIZE / 3 < rNomal.getHeight());
-            case Item.TYPE_BEAN_POWER:
+            case Item.TYPE_BULLET:
                 Rectangle rPower = recPacman.intersection(iteam.getRItem());
                 return (Item.SIZE / 2 < rPower.getWidth() && Item.SIZE / 3 < rPower.getHeight());
         }

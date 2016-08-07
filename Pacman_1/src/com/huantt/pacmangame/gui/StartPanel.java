@@ -4,6 +4,7 @@ import com.huantt.pacmangame.interfaces.OnClickGameListener;
 import com.huantt.pacmangame.model.Ghost;
 import com.huantt.pacmangame.model.Pacman;
 import manager.ImageLoader;
+import manager.PlayerManagerWAV;
 import manager.SoundPlayer;
 
 import javax.swing.*;
@@ -27,6 +28,7 @@ public class StartPanel extends BaseContaiter implements Runnable {
     private int x;
     private int y;
     private ArrayList<Ghost> ghosts;
+    private PlayerManagerWAV playerManagerWAV;
 
     public StartPanel() {
         super();
@@ -87,11 +89,12 @@ public class StartPanel extends BaseContaiter implements Runnable {
             public void mouseClicked(MouseEvent e) {
                 if (e.getComponent().equals(lbPlay)) {
                     onPlayListener.onClickPlay();
+                    playerManagerWAV.getsStartgame().stop();
                 }
                 if (e.getComponent().equals(lbHighScores)) {
                     onPlayListener.onClickHightScore();
                 }
-                if (e.getComponent().equals(lbAbout)){
+                if (e.getComponent().equals(lbAbout)) {
                     onPlayListener.onClickAbout();
                 }
             }
@@ -132,7 +135,8 @@ public class StartPanel extends BaseContaiter implements Runnable {
 
     @Override
     public void run() {
-//        soundPlayer.playSound(FileSoundManager.SOUND_INTRO);
+        playerManagerWAV = PlayerManagerWAV.getInstance();
+        playerManagerWAV.getsStartgame().play();
         background = ImageLoader.IMG_BACKGROUND[1];
         repaint();
         add(lbPlay);

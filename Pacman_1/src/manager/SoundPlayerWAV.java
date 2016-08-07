@@ -7,7 +7,7 @@ import java.net.URL;
 /**
  * Created by Huan on 8/5/2016.
  */
-public class SoundPlayerWAV implements LineListener{
+public class SoundPlayerWAV implements LineListener {
 
     Clip clip;
 
@@ -36,7 +36,8 @@ public class SoundPlayerWAV implements LineListener{
     public void stop() {
         clip.stop();
     }
-    public void loop(int count){
+
+    public void loop(int count) {
         clip.loop(count);
     }
 

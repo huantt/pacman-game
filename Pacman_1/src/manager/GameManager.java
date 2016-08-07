@@ -5,6 +5,7 @@ import com.huantt.pacmangame.gui.MyContainer;
 import com.huantt.pacmangame.interfaces.OnChangeListener;
 import com.huantt.pacmangame.model.*;
 
+import javax.sound.sampled.Clip;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
@@ -32,6 +33,7 @@ public class GameManager {
     public static final int NUM_OF_ROWS_MAP = 22;
     public static final int NUM_OF_COLUMNS_MAP = 21;
     private static final int MAX_COUNTDOWN_PACMAN = 250;
+    private PlayerManagerWAV playerManagerWAV = PlayerManagerWAV.getInstance();
 
     public GameManager() {
         initializeGhost();
@@ -71,8 +73,8 @@ public class GameManager {
                             numberOfBeanNomal++;
                             items.add(new Item(Item.SIZE * i, Item.SIZE * row, Item.TYPE_BEAN_NORMAL));
                             break;
-                        case Item.TYPE_BEAN_POWER:
-                            items.add(new Item(Item.SIZE * i, Item.SIZE * row, Item.TYPE_BEAN_POWER));
+                        case Item.TYPE_BULLET:
+                            items.add(new Item(Item.SIZE * i, Item.SIZE * row, Item.TYPE_BULLET));
                             break;
                         case Item.TYPE_DOOR:
                             items.add(new Item(Item.SIZE * i, Item.SIZE * row, Item.TYPE_DOOR));
@@ -107,7 +109,6 @@ public class GameManager {
         if (numberOfBeanNomal == 0) {
             Rectangle recPacman = new Rectangle(pacman.getX(), pacman.getY(), Pacman.SIZE, Pacman.SIZE);
             if (recPacman.intersects(swirl.getrSwirl())) {
-                System.out.println("WIN");
                 return true;
             }
         }
@@ -121,6 +122,8 @@ public class GameManager {
     //Handle Pacman
     public void handleMovePacMan(int count) {
         if (isWin()) {
+            playerManagerWAV.getsHu().stop();
+            playerManagerWAV.getsWin().play();
             String name = JOptionPane.showInputDialog(null, "Name");
             playerManager.addPlayer(new Player(name, score));
             MyContainer myContainer = MyContainer.getInstance();
@@ -131,9 +134,14 @@ public class GameManager {
         Rectangle rePacman = new Rectangle(pacman.getX(), pacman.getY(), pacman.SIZE - 5, Pacman.SIZE - 5);
         for (int i = 0; i < ghosts.size(); i++) {
             if (rePacman.intersects(ghosts.get(i).getReGhost()) && ghosts.get(i).isDie() == false) {
-                SoundPlayer soundPlayer = new SoundPlayer();
-                soundPlayer.playSound(FileSoundManager.SOUND_PACMAN_DIE);
                 onChangeListener.onPacmanDie();
+                playerManagerWAV.getsDie().play();
+                try {
+                    Thread.sleep(1800);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                playerManagerWAV.getsDie().stop();
                 if (pacman.die() == 0) {
                     String name = JOptionPane.showInputDialog(null, "Name");
                     playerManager.addPlayer(new Player(name, score));
@@ -154,13 +162,15 @@ public class GameManager {
                     case Item.TYPE_STONE:
                         return;
                     case Item.TYPE_BEAN_NORMAL:
+                        playerManagerWAV.getSEatItem().play();
                         items.remove(i);
                         score++;
                         onChangeListener.onChangeScore(score);
                         numberOfBeanNomal--;
                         breackFor = true;
                         break;
-                    case Item.TYPE_BEAN_POWER:
+                    case Item.TYPE_BULLET:
+                        playerManagerWAV.getsEatBullet().play();
                         items.remove(i);
                         numberOfBullet++;
                         onChangeListener.onAddBullet(numberOfBullet);
@@ -271,6 +281,8 @@ public class GameManager {
             Rectangle reBullet = new Rectangle(bullets.get(i).getX(), bullets.get(i).getY(), Bullet.SIZE, Bullet.SIZE);
             for (int j = 0; j < ghosts.size(); j++) {
                 if (reBullet.intersects(ghosts.get(j).getReGhost())) {
+                    score += 10;
+                    onChangeListener.onChangeScore(score);
                     ghosts.get(j).setDie(true);
                     bullets.remove(i);
                     isBreak = true;
@@ -312,6 +324,7 @@ public class GameManager {
     public void fireByPacman() {
         if (numberOfBullet > 0) {
             if (countDowntFirePacman == 0) {
+                playerManagerWAV.getsBullet().play();
                 numberOfBullet--;
                 onChangeListener.onAddBullet(numberOfBullet);
                 System.out.println("numberOfBullet = " + numberOfBullet);
@@ -327,6 +340,7 @@ public class GameManager {
 
     public void drawSwirl(Graphics2D graphics2D) {
         if (numberOfBeanNomal == 0) {
+            playerManagerWAV.getsHu().loop(Clip.LOOP_CONTINUOUSLY);
             swirl.draw(graphics2D);
         }
     }

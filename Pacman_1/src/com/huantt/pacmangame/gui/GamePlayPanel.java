@@ -4,6 +4,7 @@ package com.huantt.pacmangame.gui;
 import com.huantt.pacmangame.model.Item;
 import com.huantt.pacmangame.model.Pacman;
 import manager.GameManager;
+import manager.PlayerManagerWAV;
 
 import java.awt.*;
 import java.awt.event.KeyAdapter;
@@ -28,7 +29,6 @@ public class GamePlayPanel extends BaseContaiter implements Runnable {
         startGame();
         initializeKeyListener();
         setSize(WIDTH_PANEL, HEIGHT_PANEL);
-
     }
 
     public GameManager getGameManager() {
@@ -99,15 +99,16 @@ public class GamePlayPanel extends BaseContaiter implements Runnable {
         super.paintComponent(g);
         Graphics2D graphics2D = (Graphics2D) g;
         gameManager.drawBullet(graphics2D);
-        gameManager.drawSwirl(graphics2D);
         gameManager.drawIteam(graphics2D);
         gameManager.drawGhost(graphics2D);
         gameManager.drawPacMan(graphics2D);
+        gameManager.drawSwirl(graphics2D);
     }
 
     @Override
     public void run() { // Thread nay chuyen xu ly cac cong viec tinh toan de nhan vat di chuyen cac thu
         int countSpeed = 0;
+        PlayerManagerWAV playerManagerWAV = PlayerManagerWAV.getInstance();
         while (isRunning) {
             handleKeyAction();
             gameManager.handleMovePacMan(countSpeed);
