@@ -31,6 +31,7 @@ public class GameManager {
     private int score;
     private int numberOfBeanNomal;
     private int numberOfBullet;
+
     public GameManager() {
         initializeGhost();
         swirl = new Swirl((NUM_OF_COLUMNS_MAP / 2) * Item.SIZE, (NUM_OF_ROWS_MAP / 2 - 1) * Item.SIZE);
@@ -120,21 +121,20 @@ public class GameManager {
 
     public void handleMovePacMan(int count) {
         boolean breackFor = false;
-        Rectangle rePacman = new Rectangle(pacman.getX(), pacman.getY(), pacman.SIZE - 5, Pacman.SIZE - 5);
+        Rectangle rePacman = new Rectangle(pacman.getX(), pacman.getY(), pacman.SIZE, Pacman.SIZE);
         for (int i = 0; i < ghosts.size(); i++) {
             if (rePacman.intersects(ghosts.get(i).getReGhost()) && ghosts.get(i).isDie() == false) {
                 SoundPlayer soundPlayer = new SoundPlayer();
                 soundPlayer.playSound(FileSoundManager.SOUND_PACMAN_DIE);
                 onChangeListener.onPacmanDie();
-
                 if (pacman.die() == 0) {
-                    playerManager.addPlayer(new Player("T", score));
-                    int select = JOptionPane.showConfirmDialog(null, "Game Over", "Game over", JOptionPane.OK_OPTION);
-                    if (select == 0){
-                        System.exit(0);
-                    }else {
-
-                    }
+//                    int select = JOptionPane.showConfirmDialog(null, "Game Over", "Game over", JOptionPane.OK_OPTION);
+                    String name = JOptionPane.showInputDialog(null,"Name");
+//                    if (select == 0) {
+//                        System.exit(0);
+//                    }
+                    playerManager.addPlayer(new Player(name, score));
+                    System.exit(0);
                 } else {
                     pacman.setLocation((NUM_OF_COLUMNS_MAP / 2) * Item.SIZE, (NUM_OF_ROWS_MAP - 2) * Item.SIZE);
                     initializeGhost();
@@ -333,4 +333,5 @@ public class GameManager {
     public void addChangeScoreListenr(OnChangeListener onChangeScoreListener) {
         this.onChangeListener = onChangeScoreListener;
     }
+
 }

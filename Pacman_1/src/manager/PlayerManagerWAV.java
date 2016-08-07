@@ -6,19 +6,19 @@ import javax.sound.sampled.Clip;
  * Created by Huan on 8/5/2016.
  */
 public class PlayerManagerWAV {
-    public static PlayerManager instance;
+    public static PlayerManagerWAV instance;
     private SoundPlayerWAV sBG;
     private SoundPlayerWAV sBullet;
 
-    public PlayerManagerWAV() {
-        sBG = new SoundPlayerWAV("win");
-        sBG.loop(Clip.LOOP_CONTINUOUSLY);
+    private PlayerManagerWAV() {
+        sBG = new SoundPlayerWAV("Background");
         sBullet = new SoundPlayerWAV("win");
+        sBG.loop(Clip.LOOP_CONTINUOUSLY);
     }
 
-    public static synchronized PlayerManager getInstance() {
+    public static synchronized PlayerManagerWAV getInstance() {
             if (instance == null) {
-                instance = new PlayerManager();
+                instance = new PlayerManagerWAV();
             }
             return instance;
         }

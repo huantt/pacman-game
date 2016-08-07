@@ -19,18 +19,14 @@ public class PlayerManager {
 
     public PlayerManager() {
         data = new File(getClass().getResource("/data/DataPlayer.txt").getFile());
-        try {
-            randomAccessFile = new RandomAccessFile(data, "rw");
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
         readData();
     }
 
     public void readData() {
-        listPlayer = new ArrayList<>();
-        String line;
         try {
+            randomAccessFile = new RandomAccessFile(data, "rw");
+            listPlayer = new ArrayList<>();
+            String line;
             while ((line = randomAccessFile.readLine()) != null) {
                 System.out.println(line);
                 String[] dataPlayer = line.split("-");
@@ -51,37 +47,32 @@ public class PlayerManager {
         return listPlayer;
     }
 
-
     public boolean addPlayer(Player player) {
-        if (listPlayer.size() == 0) {
+        if (listPlayer.size() < 5) {
             listPlayer.add(player);
-            try {
-                System.out.println(player.toString().getBytes());
-                randomAccessFile.write(player.toString().getBytes());
-                randomAccessFile.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            writeData();
             return true;
         } else if (player.getScore() > listPlayer.get(listPlayer.size() - 1).getScore()) {
             listPlayer.remove(listPlayer.size() - 1);
             listPlayer.add(player);
-            try {
-                randomAccessFile.write(player.toString().getBytes());
-                randomAccessFile.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }finally {
-                try {
-                    randomAccessFile.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+            writeData();
             return true;
 
         }
         return false;
     }
 
+    public void writeData() {
+        try {
+            randomAccessFile = new RandomAccessFile(data, "rw");
+            for (Player player : listPlayer) {
+                randomAccessFile.write(player.toString().getBytes());
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
 }

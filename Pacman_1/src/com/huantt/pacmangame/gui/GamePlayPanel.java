@@ -30,6 +30,7 @@ public class GamePlayPanel extends BaseContaiter implements Runnable, OnChangeLi
         startGame();
         initializeKeyListener();
         setSize(WIDTH_PANEL, HEIGHT_PANEL);
+
     }
 
     public GameManager getGameManager() {

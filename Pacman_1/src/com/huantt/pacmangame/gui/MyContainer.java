@@ -1,6 +1,7 @@
 package com.huantt.pacmangame.gui;
 
 import com.huantt.pacmangame.interfaces.OnClickGameListener;
+import manager.PlayerManagerWAV;
 
 import java.awt.*;
 
@@ -14,12 +15,14 @@ public class MyContainer extends BaseContaiter implements OnClickGameListener {
     private InfoPanel infoPanel;
     private HightScorePanel hightScorePanel;
     private AboutPanel aboutPanel;
+    private PlayerManagerWAV playerManagerWAV;
 
     @Override
     void initializePanel() {
         setLayout(null);
         setBackground(Color.BLACK);
         startPanel.addPlayListener(this);
+
     }
 
     @Override
