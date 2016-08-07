@@ -1,6 +1,5 @@
 package com.huantt.pacmangame.model;
 
-import com.huantt.pacmangame.gui.GUI;
 import manager.ImageLoader;
 
 import java.awt.*;
@@ -10,6 +9,7 @@ import java.util.Random;
  * Created by Huan on 7/31/2016.
  */
 public class Ghost extends GameObject {
+
     public static final int UP = 0;
     public static final int DOWN = 1;
     public static final int RIGHT = 2;
@@ -23,14 +23,13 @@ public class Ghost extends GameObject {
     public static final String UP_DOWN = "UD";
     public static final String FOUR_ORIENTS = "4_Orient";
     private static final int MAX_COUNTDOWN = 100;
-    private Random random = new Random();
     private int type;
     private int orient;
-    int count;
-    int delay;
+    private int delay;
     private int numberOfImage;
     private int countDownImage;
     private String orients;
+    private Random random = new Random();
     private Rectangle reGhost;
     private boolean isDie;
 
@@ -41,37 +40,12 @@ public class Ghost extends GameObject {
         orient = RIGHT;
         this.delay = delay;
         this.orients = orients;
-        reGhost = new Rectangle(x, y, SIZE, SIZE);
+        reGhost = new Rectangle(x, y, SIZE-5, SIZE-5);
 
     }
 
     public Rectangle getReGhost() {
         return reGhost;
-    }
-
-    public void setOrient(int orient) {
-        this.orient = orient;
-    }
-
-    @Override
-    public void draw(Graphics2D graphics2D) {
-        if (isDie) {
-            graphics2D.drawImage(ImageLoader.IMG_GHOST_DIE[numberOfImage/2], x, y, SIZE, SIZE, null);
-        }else
-        switch (type) {
-            case TYPE_BLINKY:
-                graphics2D.drawImage(ImageLoader.IMG_BLINKY[numberOfImage], x, y, SIZE, SIZE, null);
-                break;
-            case TYPE_CLYDE:
-                graphics2D.drawImage(ImageLoader.IMG_CLYDE[numberOfImage], x, y, SIZE, SIZE, null);
-                break;
-            case TYPE_INKY:
-                graphics2D.drawImage(ImageLoader.IMG_INKY[numberOfImage], x, y, SIZE, SIZE, null);
-                break;
-            case TYPE_PINKY:
-                graphics2D.drawImage(ImageLoader.IMG_PINKY[numberOfImage], x, y, SIZE, SIZE, null);
-                break;
-        }
     }
 
     public void move(int count) {
@@ -106,6 +80,14 @@ public class Ghost extends GameObject {
         }
         reGhost.setLocation(x, y);
 
+    }
+
+    public void setOrient(int orient) {
+        this.orient = orient;
+    }
+
+    public void setDie(boolean die) {
+        isDie = die;
     }
 
     public void autoChaneOrient() {
@@ -160,11 +142,28 @@ public class Ghost extends GameObject {
         return false;
     }
 
-    public void setDie(boolean die) {
-        isDie = die;
-    }
-
     public boolean isDie() {
         return isDie;
+    }
+
+    @Override
+    public void draw(Graphics2D graphics2D) {
+        if (isDie) {
+            graphics2D.drawImage(ImageLoader.IMG_GHOST_DIE[numberOfImage/2], x, y, SIZE, SIZE, null);
+        }else
+        switch (type) {
+            case TYPE_BLINKY:
+                graphics2D.drawImage(ImageLoader.IMG_BLINKY[numberOfImage], x, y, SIZE, SIZE, null);
+                break;
+            case TYPE_CLYDE:
+                graphics2D.drawImage(ImageLoader.IMG_CLYDE[numberOfImage], x, y, SIZE, SIZE, null);
+                break;
+            case TYPE_INKY:
+                graphics2D.drawImage(ImageLoader.IMG_INKY[numberOfImage], x, y, SIZE, SIZE, null);
+                break;
+            case TYPE_PINKY:
+                graphics2D.drawImage(ImageLoader.IMG_PINKY[numberOfImage], x, y, SIZE, SIZE, null);
+                break;
+        }
     }
 }

@@ -1,7 +1,6 @@
 package com.huantt.pacmangame.gui;
 
 
-import com.huantt.pacmangame.interfaces.OnChangeListener;
 import com.huantt.pacmangame.model.Item;
 import com.huantt.pacmangame.model.Pacman;
 import manager.GameManager;
@@ -15,7 +14,7 @@ import java.util.BitSet;
  * Created by Huan on 7/12/2016.
  */
 
-public class GamePlayPanel extends BaseContaiter implements Runnable, OnChangeListener {
+public class GamePlayPanel extends BaseContaiter implements Runnable {
     public static final int WIDTH_PANEL = GameManager.NUM_OF_COLUMNS_MAP * Item.SIZE;
     public static final int HEIGHT_PANEL = GameManager.NUM_OF_ROWS_MAP * Item.SIZE;
 
@@ -92,16 +91,6 @@ public class GamePlayPanel extends BaseContaiter implements Runnable, OnChangeLi
         if (bitSet.get(KeyEvent.VK_SPACE)) {
             gameManager.fireByPacman();
         }
-
-    }
-
-    @Override
-    public void onChangeScore(int score) {
-
-    }
-
-    @Override
-    public void onPacmanDie() {
 
     }
 

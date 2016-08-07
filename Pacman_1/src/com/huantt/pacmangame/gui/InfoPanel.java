@@ -13,7 +13,8 @@ import java.util.ArrayList;
 public class InfoPanel extends BaseContaiter implements OnChangeListener {
     public static final int WIDTH_FRAME = GamePlayPanel.WIDTH_PANEL;
     public static final int HEIGHT_FRAME = 100;
-    private int score;
+    private int scores;
+    private int bullets;
     private GameManager gameManager;
     private ArrayList<Image> livesPacMan;
 
@@ -40,25 +41,37 @@ public class InfoPanel extends BaseContaiter implements OnChangeListener {
         graphics2D.setStroke(new BasicStroke(3));
         graphics2D.setFont(new Font("Tahoma", Font.BOLD, 15));
         graphics2D.setColor(Color.WHITE);
-        graphics2D.drawString("Score: " + score, 30, 30);
+        graphics2D.drawString("Score: " + scores, 30, 30);
         for (int i = 0; i < livesPacMan.size(); i++) {
             graphics2D.drawImage(livesPacMan.get(i), GUI.WIDTH_FRAME - 100 + i * 21, 15, 20, 20, null);
         }
+        for (int i = 0; i < bullets; i++) {
+            graphics2D.drawImage(ImageLoader.IMG_BULLET, (GUI.WIDTH_FRAME - 90) / 2 + i * 21, 15, 20, 20, null);
+        }
+
     }
 
 
     @Override
     public void onChangeScore(int score) {
-        this.score = score;
+        this.scores = score;
         this.repaint();
 
 
     }
 
-       @Override
+    @Override
     public void onPacmanDie() {
         livesPacMan.remove(0);
         this.repaint();
+    }
+
+
+    @Override
+    public void onAddBullet(int bullets) {
+        this.bullets = bullets;
+        System.out.println(bullets);
+        repaint();
     }
 
     public void addOnChangeScore(GameManager gameManager) {

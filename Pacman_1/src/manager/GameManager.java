@@ -17,35 +17,31 @@ import java.util.ArrayList;
  * Created by Huan on 7/22/2016
  */
 public class GameManager {
+    private int pacmanNextOrient;
+    private int countDowntFirePacman;
+    private int score;
+    private int numberOfBeanNomal;
     private Pacman pacman;
-    private ArrayList<Item> iteams;
+    private ArrayList<Item> items;
     private ArrayList<Bullet> bullets;
     private ArrayList<Ghost> ghosts;
     private Swirl swirl;
     private OnChangeListener onChangeListener;
     private PlayerManager playerManager;
+    private int numberOfBullet;
     public static final int NUM_OF_ROWS_MAP = 22;
     public static final int NUM_OF_COLUMNS_MAP = 21;
-    private static final int MAX_COUNTDOWN_PACMAN = 100;
-    private int pacmanNextOrient;
-    private int countDowntFirePacman;
-    private int score;
-    private int numberOfBeanNomal;
-    private int numberOfBullet;
+    private static final int MAX_COUNTDOWN_PACMAN = 250;
 
     public GameManager() {
         initializeGhost();
         swirl = new Swirl((NUM_OF_COLUMNS_MAP / 2) * Item.SIZE, (NUM_OF_ROWS_MAP / 2 - 1) * Item.SIZE);
         pacmanNextOrient = Pacman.LEFT;
         pacman = new Pacman((NUM_OF_COLUMNS_MAP / 2) * Item.SIZE, (NUM_OF_ROWS_MAP - 2) * Item.SIZE, Pacman.UP, 1);
-        iteams = new ArrayList<>();
+        items = new ArrayList<>();
         bullets = new ArrayList<>();
         loadMap("map.txt");
         playerManager = new PlayerManager();
-    }
-
-    public int getScore() {
-        return score;
     }
 
     public int getPacmanNextOrient() {
@@ -56,21 +52,8 @@ public class GameManager {
         this.pacmanNextOrient = pacmanNextOrient;
     }
 
-    public void drawPacMan(Graphics2D graphics2D) {
-        pacman.draw(graphics2D);
-    }
-
-    public void movePacman(int count) {
-        pacman.move(count);
-    }
-
-    public void chanePacmanOrient(int orient) {
-        pacman.setOrient(orient);
-
-    }
-
     public void loadMap(String fileName) {
-        iteams.clear(); // Xoa data trong list cu khi goi ham nay 2 lan
+        items.clear(); // Xoa data trong list cu khi goi ham nay 2 lan
         File file = new File(getClass().getResource("/res/maps/" + fileName).getPath());
         int row = 0;
         RandomAccessFile raf = null;
@@ -82,17 +65,17 @@ public class GameManager {
                     int type = line.charAt(i) - '0';
                     switch (type) {
                         case Item.TYPE_STONE:
-                            iteams.add(new Item(Item.SIZE * i, Item.SIZE * row, Item.TYPE_STONE));
+                            items.add(new Item(Item.SIZE * i, Item.SIZE * row, Item.TYPE_STONE));
                             break;
                         case Item.TYPE_BEAN_NORMAL:
                             numberOfBeanNomal++;
-                            iteams.add(new Item(Item.SIZE * i, Item.SIZE * row, Item.TYPE_BEAN_NORMAL));
+                            items.add(new Item(Item.SIZE * i, Item.SIZE * row, Item.TYPE_BEAN_NORMAL));
                             break;
                         case Item.TYPE_BEAN_POWER:
-                            iteams.add(new Item(Item.SIZE * i, Item.SIZE * row, Item.TYPE_BEAN_POWER));
+                            items.add(new Item(Item.SIZE * i, Item.SIZE * row, Item.TYPE_BEAN_POWER));
                             break;
                         case Item.TYPE_DOOR:
-                            iteams.add(new Item(Item.SIZE * i, Item.SIZE * row, Item.TYPE_DOOR));
+                            items.add(new Item(Item.SIZE * i, Item.SIZE * row, Item.TYPE_DOOR));
                             break;
                     }
                 }
@@ -114,12 +97,28 @@ public class GameManager {
     }
 
     public void drawIteam(Graphics2D graphics2D) {
-        assert iteams != null;
-        for (int i = 0; i < iteams.size(); i++) {
-            iteams.get(i).draw(graphics2D);
+        assert items != null;
+        for (int i = 0; i < items.size(); i++) {
+            items.get(i).draw(graphics2D);
         }
     }
 
+    public boolean isWin() {
+        if (numberOfBeanNomal == 0) {
+            Rectangle recPacman = new Rectangle(pacman.getX(), pacman.getY(), Pacman.SIZE, Pacman.SIZE);
+            if (recPacman.intersects(swirl.getrSwirl())) {
+                System.out.println("WIN");
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void addChangeScoreListenr(OnChangeListener onChangeScoreListener) {
+        this.onChangeListener = onChangeScoreListener;
+    }
+
+    //Handle Pacman
     public void handleMovePacMan(int count) {
         if (isWin()) {
             String name = JOptionPane.showInputDialog(null, "Name");
@@ -127,9 +126,9 @@ public class GameManager {
             MyContainer myContainer = MyContainer.getInstance();
             myContainer.backMenu();
         }
-
+        // Handle va cham voi ghost
         boolean breackFor = false;
-        Rectangle rePacman = new Rectangle(pacman.getX(), pacman.getY(), pacman.SIZE-5, Pacman.SIZE-5);
+        Rectangle rePacman = new Rectangle(pacman.getX(), pacman.getY(), pacman.SIZE - 5, Pacman.SIZE - 5);
         for (int i = 0; i < ghosts.size(); i++) {
             if (rePacman.intersects(ghosts.get(i).getReGhost()) && ghosts.get(i).isDie() == false) {
                 SoundPlayer soundPlayer = new SoundPlayer();
@@ -148,21 +147,23 @@ public class GameManager {
                 }
             }
         }
-        for (int i = 0; i < iteams.size(); i++) {
-            if (pacman.collision(iteams.get(i))) {
-                switch (iteams.get(i).getType()) {
+        //Handle va cham voi item
+        for (int i = 0; i < items.size(); i++) {
+            if (pacman.collision(items.get(i))) {
+                switch (items.get(i).getType()) {
                     case Item.TYPE_STONE:
                         return;
                     case Item.TYPE_BEAN_NORMAL:
-                        iteams.remove(i);
+                        items.remove(i);
                         score++;
                         onChangeListener.onChangeScore(score);
                         numberOfBeanNomal--;
                         breackFor = true;
                         break;
                     case Item.TYPE_BEAN_POWER:
-                        iteams.remove(i);
+                        items.remove(i);
                         numberOfBullet++;
+                        onChangeListener.onAddBullet(numberOfBullet);
                         break;
                 }
                 if (breackFor) break;
@@ -170,6 +171,19 @@ public class GameManager {
         }
 
         movePacman(count);
+    }
+
+    public void movePacman(int count) {
+        pacman.move(count);
+    }
+
+    public void chanePacmanOrient(int orient) {
+        pacman.setOrient(orient);
+
+    }
+
+    public void drawPacMan(Graphics2D graphics2D) {
+        pacman.draw(graphics2D);
     }
 
     public boolean canChangeOrientPacman() {
@@ -194,8 +208,8 @@ public class GameManager {
                 yRec += 2;
         }
         Rectangle reNextOrient = new Rectangle(xRec, yRec, Pacman.SIZE, Pacman.SIZE);
-        for (int i = 0; i < iteams.size(); i++) {
-            if (iteams.get(i).getType() == Item.TYPE_STONE && reNextOrient.intersects(iteams.get(i).getRItem())) {
+        for (int i = 0; i < items.size(); i++) {
+            if (items.get(i).getType() == Item.TYPE_STONE && reNextOrient.intersects(items.get(i).getRItem())) {
                 return false;
             }
 
@@ -208,34 +222,46 @@ public class GameManager {
 
     }
 
-
-//    public void moveBullet() {
-//        for (int i = 0; i < bullets.size(); i++) {
-//
-//        }
-//    }
-
-    public void drawBullet(Graphics2D graphic2D) {
-        for (Bullet bullet : bullets) {
-            bullet.draw(graphic2D);
-        }
-    }
-
-    public void fireByPacman() {
-        if (numberOfBullet > 0) {
-            if (countDowntFirePacman == 0) {
-                numberOfBullet--;
-                System.out.println("numberOfBullet = " + numberOfBullet);
-                Bullet bullet = new Bullet(pacman.getOrient(), pacman.getX(), pacman.getY());
-                bullets.add(bullet);
-                countDowntFirePacman = MAX_COUNTDOWN_PACMAN;
-            } else {
-                countDowntFirePacman -= 20;
+    //Handle Ghost
+    public void handleGhostMove(int count) {
+        boolean[] isMove = new boolean[4];
+        for (int j = 0; j < ghosts.size(); j++) {
+            for (Ghost ghost : ghosts) {
+                if (ghosts.get(j).getReGhost().intersects(ghost.getReGhost()) && !ghost.isDie()) {
+                    ghosts.get(j).setDie(false);
+                }
             }
-
+            for (int i = 0; i < items.size(); i++) {
+                if (ghosts.get(j).collision(items.get(i))) {
+                    isMove[j] = false;
+                    break;
+                } else {
+                    isMove[j] = true;
+                }
+            }
+            if (isMove[j] == true) {
+                ghosts.get(j).move(count);
+            } else {
+                ghosts.get(j).autoChaneOrient();
+            }
         }
     }
 
+    public void drawGhost(Graphics2D graphics2D) {
+        for (int i = 0; i < ghosts.size(); i++) {
+            ghosts.get(i).draw(graphics2D);
+        }
+    }
+
+    private void initializeGhost() {
+        ghosts = new ArrayList<>();
+        ghosts.add(new Ghost((NUM_OF_COLUMNS_MAP / 2) * Item.SIZE, (NUM_OF_ROWS_MAP / 2 + 5) * Item.SIZE, Ghost.TYPE_BLINKY, 1, Ghost.FOUR_ORIENTS));
+        ghosts.add(new Ghost((NUM_OF_COLUMNS_MAP / 2 - 3) * Item.SIZE, (NUM_OF_ROWS_MAP / 2 - 7) * Item.SIZE, Ghost.TYPE_PINKY, 1, Ghost.FOUR_ORIENTS));
+        ghosts.add(new Ghost((NUM_OF_COLUMNS_MAP / 2 + 3) * Item.SIZE, (NUM_OF_ROWS_MAP / 2 - 7) * Item.SIZE, Ghost.TYPE_CLYDE, 1, Ghost.FOUR_ORIENTS));
+        ghosts.add(new Ghost((NUM_OF_COLUMNS_MAP / 2) * Item.SIZE, (NUM_OF_ROWS_MAP / 2 - 3) * Item.SIZE, Ghost.TYPE_INKY, 1, Ghost.LEFT_RIGHT));
+    }
+
+    //Handle Bullet
     public void handleBulletMove() {
         boolean isBreak = false;
         int maxI = bullets.size();
@@ -260,9 +286,9 @@ public class GameManager {
                 maxI = bullets.size();
             }
 
-            for (int j = 0; j < iteams.size(); j++) {
+            for (int j = 0; j < items.size(); j++) {
 
-                if (i < bullets.size() && !bullets.isEmpty() && bullets.get(i).collision(iteams.get(j))) { // Phải check lại i vì size bullet đã thay đổi có thể nhỏ hơn i
+                if (i < bullets.size() && !bullets.isEmpty() && bullets.get(i).collision(items.get(j))) { // Phải check lại i vì size bullet đã thay đổi có thể nhỏ hơn i
                     bullets.remove(i);
                     isBreak = true;
                     break;
@@ -276,69 +302,33 @@ public class GameManager {
 
     }
 
+    public void drawBullet(Graphics2D graphic2D) {
+        for (Bullet bullet : bullets) {
+            bullet.draw(graphic2D);
+        }
+    }
+
+
+    public void fireByPacman() {
+        if (numberOfBullet > 0) {
+            if (countDowntFirePacman == 0) {
+                numberOfBullet--;
+                onChangeListener.onAddBullet(numberOfBullet);
+                System.out.println("numberOfBullet = " + numberOfBullet);
+                Bullet bullet = new Bullet(pacman.getOrient(), pacman.getX(), pacman.getY());
+                bullets.add(bullet);
+                countDowntFirePacman = MAX_COUNTDOWN_PACMAN;
+            } else {
+                countDowntFirePacman -= 10;
+            }
+
+        }
+    }
+
     public void drawSwirl(Graphics2D graphics2D) {
         if (numberOfBeanNomal == 0) {
             swirl.draw(graphics2D);
         }
-    }
-
-    public boolean isWin() {
-        if (numberOfBeanNomal == 0) {
-            Rectangle recPacman = new Rectangle(pacman.getX(), pacman.getY(), Pacman.SIZE, Pacman.SIZE);
-            if (recPacman.intersects(swirl.getrSwirl())) {
-                System.out.println("WIN");
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private void initializeGhost() {
-        ghosts = new ArrayList<>();
-        ghosts.add(new Ghost((NUM_OF_COLUMNS_MAP / 2) * Item.SIZE, (NUM_OF_ROWS_MAP / 2 + 5) * Item.SIZE, Ghost.TYPE_BLINKY, 1, Ghost.FOUR_ORIENTS));
-        ghosts.add(new Ghost((NUM_OF_COLUMNS_MAP / 2 - 3) * Item.SIZE, (NUM_OF_ROWS_MAP / 2 - 7) * Item.SIZE, Ghost.TYPE_PINKY, 1, Ghost.FOUR_ORIENTS));
-        ghosts.add(new Ghost((NUM_OF_COLUMNS_MAP / 2 + 3) * Item.SIZE, (NUM_OF_ROWS_MAP / 2 - 7) * Item.SIZE, Ghost.TYPE_CLYDE, 1, Ghost.FOUR_ORIENTS));
-        ghosts.add(new Ghost((NUM_OF_COLUMNS_MAP / 2) * Item.SIZE, (NUM_OF_ROWS_MAP / 2 - 3) * Item.SIZE, Ghost.TYPE_INKY, 1, Ghost.LEFT_RIGHT));
-    }
-
-    public void drawGhost(Graphics2D graphics2D) {
-        for (int i = 0; i < ghosts.size(); i++) {
-            ghosts.get(i).draw(graphics2D);
-        }
-    }
-
-//    public void moveGhost(int count) {
-//        for (int i = 0; i < ghosts.size(); i++) {
-//            ghosts.get(i).move(count);
-//        }
-//    }
-
-    public void handleGhostMove(int count) {
-        boolean[] isMove = new boolean[4];
-        for (int j = 0; j < ghosts.size(); j++) {
-            for (Ghost ghost : ghosts) {
-                if (ghosts.get(j).getReGhost().intersects(ghost.getReGhost()) && !ghost.isDie()) {
-                    ghosts.get(j).setDie(false);
-                }
-            }
-            for (int i = 0; i < iteams.size(); i++) {
-                if (ghosts.get(j).collision(iteams.get(i))) {
-                    isMove[j] = false;
-                    break;
-                } else {
-                    isMove[j] = true;
-                }
-            }
-            if (isMove[j] == true) {
-                ghosts.get(j).move(count);
-            } else {
-                ghosts.get(j).autoChaneOrient();
-            }
-        }
-    }
-
-    public void addChangeScoreListenr(OnChangeListener onChangeScoreListener) {
-        this.onChangeListener = onChangeScoreListener;
     }
 
 }
