@@ -6,7 +6,6 @@ import com.huantt.pacmangame.model.Item;
 import com.huantt.pacmangame.model.Pacman;
 import manager.GameManager;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -73,6 +72,10 @@ public class GamePlayPanel extends BaseContaiter implements Runnable, OnChangeLi
         thread.start();
     }
 
+    public void stopGame() {
+        isRunning = false;
+    }
+
     private void handleKeyAction() {
         if (bitSet.get(KeyEvent.VK_LEFT)) {
             gameManager.setPacmanNextOrient(Pacman.LEFT);
@@ -119,13 +122,6 @@ public class GamePlayPanel extends BaseContaiter implements Runnable, OnChangeLi
         while (isRunning) {
             handleKeyAction();
             gameManager.handleMovePacMan(countSpeed);
-            if (gameManager.isWin()) {
-                int click = JOptionPane.showConfirmDialog(null, "YOU WIN", "You Win", JOptionPane.YES_NO_OPTION);
-                if (click == 0) {
-                    System.exit(0);
-                }
-
-            }
             if (gameManager.isPacmanChangeOrient() && gameManager.canChangeOrientPacman()) {
                 gameManager.chanePacmanOrient(gameManager.getPacmanNextOrient());
             }

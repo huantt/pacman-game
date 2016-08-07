@@ -1,6 +1,7 @@
 package manager;
 
 import com.huantt.pacmangame.gui.GUI;
+import com.huantt.pacmangame.gui.MyContainer;
 import com.huantt.pacmangame.interfaces.OnChangeListener;
 import com.huantt.pacmangame.model.*;
 
@@ -120,21 +121,26 @@ public class GameManager {
     }
 
     public void handleMovePacMan(int count) {
+        if (isWin()) {
+            String name = JOptionPane.showInputDialog(null, "Name");
+            playerManager.addPlayer(new Player(name, score));
+            MyContainer myContainer = MyContainer.getInstance();
+            myContainer.backMenu();
+        }
+
         boolean breackFor = false;
-        Rectangle rePacman = new Rectangle(pacman.getX(), pacman.getY(), pacman.SIZE, Pacman.SIZE);
+        Rectangle rePacman = new Rectangle(pacman.getX(), pacman.getY(), pacman.SIZE-5, Pacman.SIZE-5);
         for (int i = 0; i < ghosts.size(); i++) {
             if (rePacman.intersects(ghosts.get(i).getReGhost()) && ghosts.get(i).isDie() == false) {
                 SoundPlayer soundPlayer = new SoundPlayer();
                 soundPlayer.playSound(FileSoundManager.SOUND_PACMAN_DIE);
                 onChangeListener.onPacmanDie();
                 if (pacman.die() == 0) {
-//                    int select = JOptionPane.showConfirmDialog(null, "Game Over", "Game over", JOptionPane.OK_OPTION);
-                    String name = JOptionPane.showInputDialog(null,"Name");
-//                    if (select == 0) {
-//                        System.exit(0);
-//                    }
+                    String name = JOptionPane.showInputDialog(null, "Name");
                     playerManager.addPlayer(new Player(name, score));
-                    System.exit(0);
+                    MyContainer myContainer = MyContainer.getInstance();
+                    myContainer.backMenu();
+                    return;
                 } else {
                     pacman.setLocation((NUM_OF_COLUMNS_MAP / 2) * Item.SIZE, (NUM_OF_ROWS_MAP - 2) * Item.SIZE);
                     initializeGhost();
@@ -280,6 +286,7 @@ public class GameManager {
         if (numberOfBeanNomal == 0) {
             Rectangle recPacman = new Rectangle(pacman.getX(), pacman.getY(), Pacman.SIZE, Pacman.SIZE);
             if (recPacman.intersects(swirl.getrSwirl())) {
+                System.out.println("WIN");
                 return true;
             }
         }

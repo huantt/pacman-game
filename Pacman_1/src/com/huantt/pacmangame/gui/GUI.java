@@ -1,8 +1,5 @@
 package com.huantt.pacmangame.gui;
 
-import com.huantt.pacmangame.model.Item;
-import manager.GameManager;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
@@ -42,7 +39,7 @@ public class GUI extends JFrame {
     private void initializeComponets() {
 //        GamePlayPanel myContainer = new GamePlayPanel();
 //        add(myContainer);
-        MyContainer myContainer = new MyContainer();
+        MyContainer myContainer = MyContainer.getInstance();
         add(myContainer);
     }
 }

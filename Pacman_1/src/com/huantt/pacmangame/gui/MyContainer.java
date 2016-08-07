@@ -9,6 +9,7 @@ import java.awt.*;
  * Created by Huan on 7/28/2016.
  */
 public class MyContainer extends BaseContaiter implements OnClickGameListener {
+    private static MyContainer instance;
 
     private StartPanel startPanel;
     private GamePlayPanel gamePlayPanel;
@@ -16,6 +17,10 @@ public class MyContainer extends BaseContaiter implements OnClickGameListener {
     private HightScorePanel hightScorePanel;
     private AboutPanel aboutPanel;
     private PlayerManagerWAV playerManagerWAV;
+
+    private MyContainer() {
+        super();
+    }
 
     @Override
     void initializePanel() {
@@ -76,5 +81,19 @@ public class MyContainer extends BaseContaiter implements OnClickGameListener {
         aboutPanel.addOnClick(this);
         add(aboutPanel);
         repaint();
+    }
+
+    public static MyContainer getInstance() {
+        if (instance == null) {
+            instance = new MyContainer();
+        }
+        return instance;
+    }
+
+    public void backMenu() {
+        gamePlayPanel.stopGame();
+        remove(gamePlayPanel);
+        remove(infoPanel);
+        add(startPanel);
     }
 }
