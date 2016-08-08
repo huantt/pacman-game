@@ -48,7 +48,7 @@ public class PlayerManagerWAV {
     }
 
     public SoundPlayerWAV getsBullet() {
-        sBullet = new SoundPlayerWAV("sBullet");
+        sBullet = new SoundPlayerWAV("sound_bullet");
         return sBullet;
     }
 

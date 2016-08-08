@@ -24,11 +24,13 @@ public class GamePlayPanel extends BaseContaiter implements Runnable {
     private KeyAdapter keyAdapter;
     private BitSet bitSet;
 
-    public GamePlayPanel() {
+    public GamePlayPanel(String map) {
         super();
+        gameManager = new GameManager(map);
         startGame();
         initializeKeyListener();
         setSize(WIDTH_PANEL, HEIGHT_PANEL);
+
     }
 
     public GameManager getGameManager() {
@@ -61,7 +63,6 @@ public class GamePlayPanel extends BaseContaiter implements Runnable {
 
     @Override
     void initializeComponents() {
-        gameManager = new GameManager();
     }
 
     public void startGame() {

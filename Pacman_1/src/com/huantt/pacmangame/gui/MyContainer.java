@@ -1,7 +1,6 @@
 package com.huantt.pacmangame.gui;
 
 import com.huantt.pacmangame.interfaces.OnClickGameListener;
-import manager.PlayerManagerWAV;
 
 import java.awt.*;
 
@@ -16,7 +15,6 @@ public class MyContainer extends BaseContaiter implements OnClickGameListener {
     private InfoPanel infoPanel;
     private HightScorePanel hightScorePanel;
     private AboutPanel aboutPanel;
-    private PlayerManagerWAV playerManagerWAV;
 
     private MyContainer() {
         super();
@@ -41,7 +39,7 @@ public class MyContainer extends BaseContaiter implements OnClickGameListener {
     public void onClickPlay() {
         remove(startPanel);
         infoPanel = new InfoPanel();
-        gamePlayPanel = new GamePlayPanel();
+        gamePlayPanel = new GamePlayPanel("map1.txt");
         gamePlayPanel.setLocation(0, 10);
         infoPanel.setLocation(0, GamePlayPanel.HEIGHT_PANEL + 10);
         infoPanel.addOnChangeScore(gamePlayPanel.getGameManager());
@@ -89,7 +87,6 @@ public class MyContainer extends BaseContaiter implements OnClickGameListener {
         }
         return instance;
     }
-
     public void backMenu() {
         gamePlayPanel.stopGame();
         remove(gamePlayPanel);

@@ -5,7 +5,6 @@ import com.huantt.pacmangame.model.Ghost;
 import com.huantt.pacmangame.model.Pacman;
 import manager.ImageLoader;
 import manager.PlayerManagerWAV;
-import manager.SoundPlayer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,7 +20,6 @@ public class StartPanel extends BaseContaiter implements Runnable {
     private JLabel lbPlay;
     private JLabel lbHighScores;
     private JLabel lbAbout;
-    private SoundPlayer soundPlayer;
     private Image background = ImageLoader.IMG_BACKGROUND[0];
     private Pacman pacman;
     private int countSpeed;
@@ -41,7 +39,6 @@ public class StartPanel extends BaseContaiter implements Runnable {
 
     @Override
     void initializePanel() {
-        soundPlayer = new SoundPlayer();
         setLayout(null);
         setBackground(Color.BLUE);
         setSize(GUI.WIDTH_FRAME, GUI.HEIGHT_FRAME);

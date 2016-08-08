@@ -35,14 +35,14 @@ public class GameManager {
     private static final int MAX_COUNTDOWN_PACMAN = 250;
     private PlayerManagerWAV playerManagerWAV = PlayerManagerWAV.getInstance();
 
-    public GameManager() {
+    public GameManager(String map) {
         initializeGhost();
         swirl = new Swirl((NUM_OF_COLUMNS_MAP / 2) * Item.SIZE, (NUM_OF_ROWS_MAP / 2 - 1) * Item.SIZE);
         pacmanNextOrient = Pacman.LEFT;
         pacman = new Pacman((NUM_OF_COLUMNS_MAP / 2) * Item.SIZE, (NUM_OF_ROWS_MAP - 2) * Item.SIZE, Pacman.UP, 1);
         items = new ArrayList<>();
         bullets = new ArrayList<>();
-        loadMap("map.txt");
+        loadMap(map);
         playerManager = new PlayerManager();
     }
 
