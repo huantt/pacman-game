@@ -3,6 +3,9 @@ package com.huantt.pacmangame.model;
 import manager.ImageLoader;
 
 import java.awt.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
 /**
@@ -10,10 +13,6 @@ import java.util.Random;
  */
 public class Ghost extends GameObject {
 
-    public static final int UP = 0;
-    public static final int DOWN = 1;
-    public static final int RIGHT = 2;
-    public static final int LEFT = 3;
     public static final int TYPE_BLINKY = 1;
     public static final int TYPE_CLYDE = 2;
     public static final int TYPE_INKY = 3;
@@ -33,6 +32,12 @@ public class Ghost extends GameObject {
     private Rectangle reGhost;
     private boolean isDie;
 
+    public Ghost(int x, int y) {
+        this.x = x;
+        this.y = y;
+        reGhost = new Rectangle(x, y, SIZE - 5, SIZE - 5);
+    }
+
     public Ghost(int x, int y, int type, int delay, String orients) {
         this.x = x;
         this.y = y;
@@ -40,8 +45,7 @@ public class Ghost extends GameObject {
         orient = RIGHT;
         this.delay = delay;
         this.orients = orients;
-        reGhost = new Rectangle(x, y, SIZE-5, SIZE-5);
-
+        reGhost = new Rectangle(x, y, SIZE - 5, SIZE - 5);
     }
 
     public Rectangle getReGhost() {
@@ -90,35 +94,88 @@ public class Ghost extends GameObject {
         isDie = die;
     }
 
-    public void autoChaneOrient() {
-        int orientNew;
+    //TODO: Apply AI
+    public void changeOrient(List<Item> items) {
+        Item closestBean = this.getClosestItem(items);
+        //So sánh khoảng cách khi di chuyển trái phải so với lên xuống để tìm đường ngắn nhất tới Bean
+        //Nếu gần nhau theo chiều ngang hơn mà không trên cùng 1 dòng thì di chuyển theo chiều dọc để tới dòng đó - tương tự với chiều dọc
+        if (Math.abs(x - closestBean.getX()) <= Math.abs(y - closestBean.getY())) {
+            if (closestBean.getX() == this.getX()) {
+                this.changeOrientByX(items, closestBean);
+            } else {
+                this.changeOrientByY(items, closestBean);
+            }
+        } else {
+            if (closestBean.getY() == this.getY()) {
+                this.changeOrientByY(items, closestBean);
+            } else {
+                this.changeOrientByX(items, closestBean);
+            }
+
+        }
+    }
+
+    public void changeOrientByX(List<Item> items, Item closestBean) {
+        if (closestBean.getX() > this.getX()) {
+            if (!this.isStone(items, this.getX() + 1 * Item.SIZE, this.getY())) orient = RIGHT;
+            else this.randomOrient();
+        } else {
+            if (!this.isStone(items, this.getX() - 1 * Item.SIZE, this.getY())) orient = LEFT;
+            else this.randomOrient();
+        }
+    }
+
+    public void changeOrientByY(List<Item> items, Item closestBean) {
+        if (closestBean.getY() > this.getY()) {
+            if (!this.isStone(items, this.getX(), this.getY() - 1 * Item.SIZE)) orient = UP;
+            else this.randomOrient();
+        } else {
+            if (!this.isStone(items, this.getX(), this.getY() + 1 * Item.SIZE)) orient = DOWN;
+            else this.randomOrient();
+        }
+    }
+
+    private void randomOrient() {
+        int newOrient;
         switch (orients) {
             case LEFT_RIGHT:
-                while ((orientNew = random.nextInt(2)) == orient) {
+                while ((newOrient = random.nextInt(2)) == orient) {
                 }
-                if (orientNew == 0) {
-                    orientNew = LEFT;
-                } else orientNew = RIGHT;
+                if (newOrient == 0) {
+                    newOrient = LEFT;
+                } else newOrient = RIGHT;
                 break;
             case UP_DOWN:
-                while ((orientNew = random.nextInt(2)) == orient) {
+                while ((newOrient = random.nextInt(2)) == orient) {
                 }
-                if (orientNew == 0) {
-                    orientNew = UP;
-                } else orientNew = DOWN;
+                if (newOrient == 0) {
+                    newOrient = UP;
+                } else newOrient = DOWN;
 
                 break;
             default:
-                while ((orientNew = random.nextInt(4)) == orient) {
+                while ((newOrient = random.nextInt(4)) == orient) {
                 }
 
         }
 
-        orient = orientNew;
-
+        orient = newOrient;
     }
 
-    public boolean collision(Item iteam) {
+    private Item getClosestItem(List<Item> items) {
+        Optional<Item> closestItem = items.stream()
+                .filter(it -> it.getType() == Item.TYPE_NORMAL_BEAN || it.getType() == Item.TYPE_BIG_BEAN || it.getType() == Item.TYPE_DOOR)
+                .sorted(Comparator.comparingInt(it -> Math.abs(it.getX() - this.getX() + Math.abs(it.getY() - this.getY())))).findFirst();
+        return closestItem.isPresent() ? closestItem.get() : null;
+    }
+
+    private boolean isStone(List<Item> items, int x, int y) {
+        Optional<Item> optionalItem = items.stream().filter(it -> it.getX() == x && it.getY() == y).findFirst();
+        if (optionalItem.isPresent()) return optionalItem.get().getType() == Item.TYPE_STONE;
+        else return false;
+    }
+
+    public boolean isCollisionStone(Item item) {
         int xRec = x;
         int yRec = y;
         switch (orient) {
@@ -136,7 +193,7 @@ public class Ghost extends GameObject {
                 break;
         }
         Rectangle reGhost = new Rectangle(xRec, yRec, SIZE, SIZE);
-        if (iteam.getType() == Item.TYPE_STONE && reGhost.intersects(iteam.getRItem())) {
+        if (item.getType() == Item.TYPE_STONE && reGhost.intersects(item.getRItem())) {
             return true;
         }
         return false;
@@ -146,24 +203,35 @@ public class Ghost extends GameObject {
         return isDie;
     }
 
+    public void tryToChangeOrient(List<Item> items) {
+        if (this.orient == DOWN || this.orient == UP) {
+            if (!this.isStone(items, this.getX() + 1 * Item.SIZE, this.getY())) this.orient = RIGHT;
+            else if (!this.isStone(items, this.getX() - 1 * Item.SIZE, this.getY())) this.orient = LEFT;
+        } else {
+            if (!this.isStone(items, this.getY() + 1 * Item.SIZE, this.getX())) this.orient = DOWN;
+            else if (!this.isStone(items, this.getY() - 1 * Item.SIZE, this.getX())) this.orient = UP;
+        }
+
+    }
+
     @Override
     public void draw(Graphics2D graphics2D) {
         if (isDie) {
-            graphics2D.drawImage(ImageLoader.IMG_GHOST_DIE[numberOfImage/2], x, y, SIZE, SIZE, null);
-        }else
-        switch (type) {
-            case TYPE_BLINKY:
-                graphics2D.drawImage(ImageLoader.IMG_BLINKY[numberOfImage], x, y, SIZE, SIZE, null);
-                break;
-            case TYPE_CLYDE:
-                graphics2D.drawImage(ImageLoader.IMG_CLYDE[numberOfImage], x, y, SIZE, SIZE, null);
-                break;
-            case TYPE_INKY:
-                graphics2D.drawImage(ImageLoader.IMG_INKY[numberOfImage], x, y, SIZE, SIZE, null);
-                break;
-            case TYPE_PINKY:
-                graphics2D.drawImage(ImageLoader.IMG_PINKY[numberOfImage], x, y, SIZE, SIZE, null);
-                break;
-        }
+            graphics2D.drawImage(ImageLoader.IMG_GHOST_DIE[numberOfImage / 2], x, y, SIZE, SIZE, null);
+        } else
+            switch (type) {
+                case TYPE_BLINKY:
+                    graphics2D.drawImage(ImageLoader.IMG_BLINKY[numberOfImage], x, y, SIZE, SIZE, null);
+                    break;
+                case TYPE_CLYDE:
+                    graphics2D.drawImage(ImageLoader.IMG_CLYDE[numberOfImage], x, y, SIZE, SIZE, null);
+                    break;
+                case TYPE_INKY:
+                    graphics2D.drawImage(ImageLoader.IMG_INKY[numberOfImage], x, y, SIZE, SIZE, null);
+                    break;
+                case TYPE_PINKY:
+                    graphics2D.drawImage(ImageLoader.IMG_PINKY[numberOfImage], x, y, SIZE, SIZE, null);
+                    break;
+            }
     }
 }

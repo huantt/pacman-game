@@ -6,6 +6,7 @@ import com.huantt.pacmangame.model.Pacman;
 import manager.GameManager;
 import manager.PlayerManagerWAV;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -26,7 +27,8 @@ public class GamePlayPanel extends BaseContaiter implements Runnable {
 
     public GamePlayPanel(String map) {
         super();
-        gameManager = new GameManager(map);
+        Integer level = Integer.parseInt(JOptionPane.showInputDialog(null, "Level: (1-4)"));
+        gameManager = new GameManager(map,level);
         startGame();
         initializeKeyListener();
         setSize(WIDTH_PANEL, HEIGHT_PANEL);

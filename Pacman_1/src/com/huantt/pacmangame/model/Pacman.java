@@ -9,10 +9,6 @@ import java.awt.*;
  * Created by Huan on 7/22/2016.
  */
 public class Pacman extends GameObject {
-    public static final int UP = 0;
-    public static final int DOWN = 1;
-    public static final int RIGHT = 2;
-    public static final int LEFT = 3;
     public static final int SIZE = GameObject.SIZE_GAME_OBJECT;
     private int numberOfImage;
     private int countDownImage;
@@ -139,10 +135,10 @@ public class Pacman extends GameObject {
                     numberOfImage = 1;
                 }
                 return isIntersect;
-            case Item.TYPE_BEAN_NORMAL:
+            case Item.TYPE_NORMAL_BEAN:
                 Rectangle rNomal = recPacman.intersection(iteam.getRItem());
                 return (Item.SIZE / 2 < rNomal.getWidth() && Item.SIZE / 3 < rNomal.getHeight());
-            case Item.TYPE_BULLET:
+            case Item.TYPE_BIG_BEAN:
                 Rectangle rPower = recPacman.intersection(iteam.getRItem());
                 return (Item.SIZE / 2 < rPower.getWidth() && Item.SIZE / 3 < rPower.getHeight());
         }

@@ -38,12 +38,7 @@ public class PlayerManager {
     }
 
     public ArrayList<Player> sortByScore() {
-        listPlayer.sort(new Comparator<Player>() {
-            @Override
-            public int compare(Player o1, Player o2) {
-                return o2.getScore() - o1.getScore();
-            }
-        });
+        listPlayer.sort((o1, o2) -> o2.getScore() - o1.getScore());
         return listPlayer;
     }
 

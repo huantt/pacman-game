@@ -11,8 +11,8 @@ public class Item extends GameObject {
     private int type;
     private Rectangle rItem;
     public static final int TYPE_STONE = 1;
-    public static final int TYPE_BEAN_NORMAL = 2;
-    public static final int TYPE_BULLET = 3;
+    public static final int TYPE_NORMAL_BEAN = 2;
+    public static final int TYPE_BIG_BEAN = 3;
     public static final int TYPE_DOOR = 4;
     public static final int SIZE = GameObject.SIZE_GAME_OBJECT;
 
@@ -37,10 +37,10 @@ public class Item extends GameObject {
             case TYPE_STONE:
                 graphics2D.drawImage(ImageLoader.IMG_ITEM_STONE, x, y, SIZE, SIZE, null);
                 break;
-            case TYPE_BEAN_NORMAL:
+            case TYPE_NORMAL_BEAN:
                 graphics2D.drawImage(ImageLoader.IMG_ITEM_BEAN_NORMAL, x, y, SIZE, SIZE, null);
                 break;
-            case TYPE_BULLET:
+            case TYPE_BIG_BEAN:
                 graphics2D.drawImage(ImageLoader.IMG_BULLET, x, y, SIZE, SIZE, null);
                 break;
             case TYPE_DOOR:

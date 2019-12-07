@@ -10,6 +10,11 @@ public abstract class GameObject {
     protected int x;
     protected int y;
 
+    public static final int UP = 0;
+    public static final int DOWN = 1;
+    public static final int RIGHT = 2;
+    public static final int LEFT = 3;
+
     public int getX() {
         return x;
     }

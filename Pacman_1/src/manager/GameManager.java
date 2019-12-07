@@ -13,15 +13,17 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Huan on 7/22/2016
  */
 public class GameManager {
     private int pacmanNextOrient;
-    private int countDowntFirePacman;
+    private int countDownFirePacman;
     private int score;
-    private int numberOfBeanNomal;
+    private int numberOfNormalBean;
     private Pacman pacman;
     private ArrayList<Item> items;
     private ArrayList<Bullet> bullets;
@@ -34,9 +36,19 @@ public class GameManager {
     public static final int NUM_OF_COLUMNS_MAP = 21;
     private static final int MAX_COUNTDOWN_PACMAN = 250;
     private PlayerManagerWAV playerManagerWAV = PlayerManagerWAV.getInstance();
+    private int ghostFlyingStep;
+    private Map<Integer, Integer> level2step = new HashMap<>();
 
-    public GameManager(String map) {
+    {
+        level2step.put(1, 10);
+        level2step.put(2, 6);
+        level2step.put(3, 5);
+        level2step.put(4, 3);
+    }
+
+    public GameManager(String map, int level) {
         initializeGhost();
+        this.ghostFlyingStep = level2step.get(level);
         swirl = new Swirl((NUM_OF_COLUMNS_MAP / 2) * Item.SIZE, (NUM_OF_ROWS_MAP / 2 - 1) * Item.SIZE);
         pacmanNextOrient = Pacman.LEFT;
         pacman = new Pacman((NUM_OF_COLUMNS_MAP / 2) * Item.SIZE, (NUM_OF_ROWS_MAP - 2) * Item.SIZE, Pacman.UP, 1);
@@ -69,12 +81,12 @@ public class GameManager {
                         case Item.TYPE_STONE:
                             items.add(new Item(Item.SIZE * i, Item.SIZE * row, Item.TYPE_STONE));
                             break;
-                        case Item.TYPE_BEAN_NORMAL:
-                            numberOfBeanNomal++;
-                            items.add(new Item(Item.SIZE * i, Item.SIZE * row, Item.TYPE_BEAN_NORMAL));
+                        case Item.TYPE_NORMAL_BEAN:
+                            numberOfNormalBean++;
+                            items.add(new Item(Item.SIZE * i, Item.SIZE * row, Item.TYPE_NORMAL_BEAN));
                             break;
-                        case Item.TYPE_BULLET:
-                            items.add(new Item(Item.SIZE * i, Item.SIZE * row, Item.TYPE_BULLET));
+                        case Item.TYPE_BIG_BEAN:
+                            items.add(new Item(Item.SIZE * i, Item.SIZE * row, Item.TYPE_BIG_BEAN));
                             break;
                         case Item.TYPE_DOOR:
                             items.add(new Item(Item.SIZE * i, Item.SIZE * row, Item.TYPE_DOOR));
@@ -106,7 +118,7 @@ public class GameManager {
     }
 
     public boolean isWin() {
-        if (numberOfBeanNomal == 0) {
+        if (numberOfNormalBean == 0) {
             Rectangle recPacman = new Rectangle(pacman.getX(), pacman.getY(), Pacman.SIZE, Pacman.SIZE);
             if (recPacman.intersects(swirl.getrSwirl())) {
                 return true;
@@ -125,6 +137,7 @@ public class GameManager {
             playerManagerWAV.getsHu().stop();
             playerManagerWAV.getsWin().play();
             String name = JOptionPane.showInputDialog(null, "Name");
+            this.reCalculateScore();
             playerManager.addPlayer(new Player(name, score));
             MyContainer myContainer = MyContainer.getInstance();
             myContainer.backMenu();
@@ -161,15 +174,15 @@ public class GameManager {
                 switch (items.get(i).getType()) {
                     case Item.TYPE_STONE:
                         return;
-                    case Item.TYPE_BEAN_NORMAL:
+                    case Item.TYPE_NORMAL_BEAN:
                         playerManagerWAV.getSEatItem().play();
                         items.remove(i);
                         score++;
                         onChangeListener.onChangeScore(score);
-                        numberOfBeanNomal--;
+                        numberOfNormalBean--;
                         breackFor = true;
                         break;
-                    case Item.TYPE_BULLET:
+                    case Item.TYPE_BIG_BEAN:
                         playerManagerWAV.getsEatBullet().play();
                         items.remove(i);
                         numberOfBullet++;
@@ -181,6 +194,13 @@ public class GameManager {
         }
 
         movePacman(count);
+    }
+
+    private void reCalculateScore() {
+        bullets.forEach(bullet -> score += 10);
+        long deadGhosts = ghosts.stream().filter(ghost -> ghost.isDie()).count();
+        score += deadGhosts * 20;
+        score += pacman.getTurn() * 30;
     }
 
     public void movePacman(int count) {
@@ -237,24 +257,69 @@ public class GameManager {
         boolean[] isMove = new boolean[4];
         for (int j = 0; j < ghosts.size(); j++) {
             for (Ghost ghost : ghosts) {
-                if (ghosts.get(j).getReGhost().intersects(ghost.getReGhost()) && !ghost.isDie()) {
+                if (ghosts.get(j) != ghost && ghosts.get(j).getReGhost().intersects(ghost.getReGhost()) && !ghost.isDie()) {
                     ghosts.get(j).setDie(false);
+                    this.moveGhostToNearWithPacman(ghosts.get(j));
                 }
             }
+
+            //Check va vào đá => set isMove = false để đổi chiều
             for (int i = 0; i < items.size(); i++) {
-                if (ghosts.get(j).collision(items.get(i))) {
+                if (ghosts.get(j).isCollisionStone(items.get(i))) {
                     isMove[j] = false;
                     break;
                 } else {
                     isMove[j] = true;
                 }
             }
+
+            // Check nếu đang không di chuyển được thì đổi chiều
             if (isMove[j] == true) {
                 ghosts.get(j).move(count);
             } else {
-                ghosts.get(j).autoChaneOrient();
+                ghosts.get(j).changeOrient(items);
             }
         }
+    }
+
+    private void moveGhostToNearWithPacman(Ghost ghost) {
+        switch (pacman.getOrient()) {
+            case GameObject.UP:
+                if (pacman.getY() - ghostFlyingStep * GameObject.SIZE_GAME_OBJECT > GameObject.SIZE_GAME_OBJECT && !isCollisionStone(new Ghost(pacman.getX(), pacman.getY() - ghostFlyingStep * GameObject.SIZE_GAME_OBJECT))) {
+                    ghost.setX(pacman.getX());
+                    ghost.setY(pacman.getY() - ghostFlyingStep * GameObject.SIZE_GAME_OBJECT);
+                    ghost.setOrient(GameObject.DOWN);
+                }
+                break;
+            case GameObject.DOWN:
+                if (pacman.getY() + ghostFlyingStep * GameObject.SIZE_GAME_OBJECT < NUM_OF_ROWS_MAP * GameObject.SIZE_GAME_OBJECT && !isCollisionStone(new Ghost(pacman.getX(), pacman.getY() + ghostFlyingStep * GameObject.SIZE_GAME_OBJECT))) {
+                    ghost.setX(pacman.getX());
+                    ghost.setY(pacman.getY() + ghostFlyingStep * GameObject.SIZE_GAME_OBJECT);
+                    ghost.setOrient(GameObject.UP);
+                }
+                break;
+            case GameObject.LEFT:
+                if (pacman.getX() - ghostFlyingStep * GameObject.SIZE_GAME_OBJECT > GameObject.SIZE_GAME_OBJECT && !isCollisionStone(new Ghost(pacman.getX() - ghostFlyingStep * GameObject.SIZE_GAME_OBJECT, pacman.getY()))) {
+                    ghost.setX(pacman.getX() - ghostFlyingStep * GameObject.SIZE_GAME_OBJECT);
+                    ghost.setY(pacman.getY());
+                    ghost.setOrient(GameObject.RIGHT);
+                }
+                break;
+            case GameObject.RIGHT:
+                if (pacman.getX() + ghostFlyingStep * GameObject.SIZE_GAME_OBJECT < NUM_OF_COLUMNS_MAP * GameObject.SIZE_GAME_OBJECT && !isCollisionStone(new Ghost(pacman.getX() + ghostFlyingStep * GameObject.SIZE_GAME_OBJECT, pacman.getY()))) {
+                    ghost.setX(pacman.getX() + ghostFlyingStep * GameObject.SIZE_GAME_OBJECT);
+                    ghost.setY(pacman.getY());
+                    ghost.setOrient(GameObject.LEFT);
+                }
+                break;
+        }
+    }
+
+    boolean isCollisionStone(Ghost ghost) {
+        for (int i = 0; i < items.size(); i++) {
+            if (ghost.isCollisionStone(items.get(i))) return true;
+        }
+        return false;
     }
 
     public void drawGhost(Graphics2D graphics2D) {
@@ -320,26 +385,25 @@ public class GameManager {
         }
     }
 
-
     public void fireByPacman() {
         if (numberOfBullet > 0) {
-            if (countDowntFirePacman == 0) {
+            if (countDownFirePacman == 0) {
                 playerManagerWAV.getsBullet().play();
                 numberOfBullet--;
                 onChangeListener.onAddBullet(numberOfBullet);
                 System.out.println("numberOfBullet = " + numberOfBullet);
                 Bullet bullet = new Bullet(pacman.getOrient(), pacman.getX(), pacman.getY());
                 bullets.add(bullet);
-                countDowntFirePacman = MAX_COUNTDOWN_PACMAN;
+                countDownFirePacman = MAX_COUNTDOWN_PACMAN;
             } else {
-                countDowntFirePacman -= 10;
+                countDownFirePacman -= 10;
             }
 
         }
     }
 
     public void drawSwirl(Graphics2D graphics2D) {
-        if (numberOfBeanNomal == 0) {
+        if (numberOfNormalBean == 0) {
             playerManagerWAV.getsHu().loop(Clip.LOOP_CONTINUOUSLY);
             swirl.draw(graphics2D);
         }

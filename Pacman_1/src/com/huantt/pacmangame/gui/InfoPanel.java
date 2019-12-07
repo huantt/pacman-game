@@ -56,8 +56,6 @@ public class InfoPanel extends BaseContaiter implements OnChangeListener {
     public void onChangeScore(int score) {
         this.scores = score;
         this.repaint();
-
-
     }
 
     @Override
